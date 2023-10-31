@@ -52,7 +52,9 @@ async function sortTokens(address) {
     const tokens_fx = await loadFx(address);
     const AllTokens = tokens_objkt.concat(tokens_fx);
 
-    return AllTokens;
+    const sortedTokens = AllTokens.sort((a, b) => new Date(a.dados.timestamp) - new Date(b.dados.timestamp));
+
+    return sortedTokens;
 }
 
 export { tratarMetadataFx, tratarDadosFx, tratarMetadataObjkt, tratarDadosObjkt, sortTokens };
