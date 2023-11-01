@@ -50,11 +50,39 @@ query Query($usernameOrAddress: String) {
   }
 `
 
-const live_feed = gql`
+const live_feed_mints = gql`
 query MyQuery {
   event(
     order_by: {timestamp: desc}
     where: {token: {name: {_neq: "null"}}, event_type: {_nin: ["open_edition_update", "transfer"]}}
+    limit: 100
+  ) {
+    price
+    event_type
+    marketplace_event_type
+    timestamp
+    recipient_address
+    ophash
+    creator {
+      address
+    }
+    token {
+      name
+      mime
+      fa_contract
+      token_id
+      artifact_uri
+      display_uri
+    }
+  }
+}
+`
+
+const live_feed_actions = gql`
+query MyQuery {
+  event(
+    order_by: {timestamp: desc}
+    where: {token: {name: {_neq: "null"}}, marketplace_event_type: {_in: ["list_create", "list_buy"]}}
     limit: 100
   ) {
     price
@@ -120,14 +148,18 @@ async function loadObjkt(address) {
         }
         tokens.push(token);
     }
-    return tokens;
+    const sortedTokens = tokens.sort((a, b) => new Date(a.dados.timestamp) - new Date(b.dados.timestamp));
+    sortedTokens.reverse()
+    return sortedTokens;
 }
 
 async function liveFeed() {
   const tokens = [];
-  const data = await request ('https://data.objkt.com/v3/graphql/', live_feed);
+  const data = await request ('https://data.objkt.com/v3/graphql/', live_feed_mints);
+  const data_actions = await request ('https://data.objkt.com/v3/graphql/', live_feed_actions);
   const tam = data.event.length;
   for (let i = 0; i < tam; i++){
+    // dado mints
     const metadata = tratarMetadataObjkt(data.event[i].token)
     const dados = tratarDadosLive(data.event[i])
     const token = {
@@ -135,6 +167,15 @@ async function liveFeed() {
       dados: dados
     }
     tokens.push(token);
+    // dados actions
+    const metadata2 = tratarMetadataObjkt(data.event[i].token)
+    const dados2 = tratarDadosLive(data.event[i])
+    const token2 = {
+      token: metadata,
+      dados: dados
+    }
+    tokens.push(token2);
+
   }
   return tokens
 }
