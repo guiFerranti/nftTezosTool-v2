@@ -55,7 +55,7 @@ query MyQuery {
   event(
     order_by: {timestamp: desc}
     where: {token: {name: {_neq: "null"}}, event_type: {_nin: ["open_edition_update", "transfer"]}}
-    limit: 20
+    limit: 100
   ) {
     price
     event_type
