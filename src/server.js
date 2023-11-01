@@ -1,4 +1,5 @@
 import { sortTokens } from './utils/utils.js';
+import { liveFeed } from './api/api.js'
 import express from 'express';
 
 const app = express();
@@ -22,3 +23,5 @@ app.get('/sales/:address', async (req, res)=> {
     }
 
 })
+
+console.log(await liveFeed())

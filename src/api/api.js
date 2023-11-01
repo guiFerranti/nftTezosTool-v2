@@ -1,5 +1,5 @@
 import { request, gql } from 'graphql-request';
-import { tratarMetadataFx, tratarDadosFx, tratarMetadataObjkt, tratarDadosObjkt } from '../utils/utils.js'
+import { tratarMetadataFx, tratarDadosFx, tratarMetadataObjkt, tratarDadosObjkt, tratarDadosLive } from '../utils/utils.js'
 
 const objkt = gql`
 query MyQuery($usernameOrAddress: String) {
@@ -50,6 +50,34 @@ query Query($usernameOrAddress: String) {
   }
 `
 
+const live_feed = gql`
+query MyQuery {
+  event(
+    order_by: {timestamp: desc}
+    where: {token: {name: {_neq: "null"}}, event_type: {_nin: ["open_edition_update", "transfer"]}}
+    limit: 20
+  ) {
+    price
+    event_type
+    marketplace_event_type
+    timestamp
+    recipient_address
+    ophash
+    creator {
+      address
+    }
+    token {
+      name
+      mime
+      fa_contract
+      token_id
+      artifact_uri
+      display_uri
+    }
+  }
+}
+`
+
 
 async function loadFx(address) {
     const variables = {
@@ -95,4 +123,20 @@ async function loadObjkt(address) {
     return tokens;
 }
 
-export { loadFx, loadObjkt };
+async function liveFeed() {
+  const tokens = [];
+  const data = await request ('https://data.objkt.com/v3/graphql/', live_feed);
+  const tam = data.event.length;
+  for (let i = 0; i < tam; i++){
+    const metadata = tratarMetadataObjkt(data.event[i].token)
+    const dados = tratarDadosLive(data.event[i])
+    const token = {
+      token: metadata,
+      dados: dados
+    }
+    tokens.push(token);
+  }
+  return tokens
+}
+
+export { loadFx, loadObjkt, liveFeed };

@@ -47,6 +47,27 @@ function tratarDadosObjkt(data) {
     return dados;
 }
 
+function tratarDadosLive(data) {
+    
+    const events = {
+        list_create: "List",
+        list_buy: "Buy",
+        mint: "Mint",
+        open_edition_buy: "Buy Open Edition",
+        open_edition_create: "List Open Edition"
+    }
+    const event = {
+        price: data['price'],
+        event_type: data['event_type'] || data['marketplace_event_type'],
+        timestamp: data['timestamp'],
+        sender: data['recipient_address'] || data.creator['address'], 
+        creator: data.creator['address'],
+    }
+
+    const EventTratado = Object.assign({}, event, {event_type: events[event.event_type]});
+    return EventTratado;
+}
+
 async function sortTokens(address) {
     const tokens_objkt = await loadObjkt(address);
     const tokens_fx = await loadFx(address);
@@ -58,4 +79,5 @@ async function sortTokens(address) {
     return sortedTokens;
 }
 
-export { tratarMetadataFx, tratarDadosFx, tratarMetadataObjkt, tratarDadosObjkt, sortTokens };
+
+export { tratarMetadataFx, tratarDadosFx, tratarMetadataObjkt, tratarDadosObjkt, sortTokens, tratarDadosLive };
