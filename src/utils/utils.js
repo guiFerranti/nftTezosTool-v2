@@ -53,6 +53,7 @@ async function sortTokens(address) {
     const AllTokens = tokens_objkt.concat(tokens_fx);
 
     const sortedTokens = AllTokens.sort((a, b) => new Date(a.dados.timestamp) - new Date(b.dados.timestamp));
+    sortedTokens.reverse()
 
     return sortedTokens;
 }
