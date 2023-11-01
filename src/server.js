@@ -24,4 +24,11 @@ app.get('/sales/:address', async (req, res)=> {
 
 })
 
-console.log(await liveFeed())
+app.get('/live_feed', async (req, res) => {
+    try {
+        const response = await liveFeed();
+        res.json(response)
+    } catch (e) {
+        console.log(e)
+    }
+})
