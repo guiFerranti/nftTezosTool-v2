@@ -148,9 +148,7 @@ async function loadObjkt(address) {
         }
         tokens.push(token);
     }
-    const sortedTokens = tokens.sort((a, b) => new Date(a.dados.timestamp) - new Date(b.dados.timestamp));
-    sortedTokens.reverse()
-    return sortedTokens;
+
 }
 
 async function liveFeed() {
@@ -168,16 +166,18 @@ async function liveFeed() {
     }
     tokens.push(token);
     // dados actions
-    const metadata2 = tratarMetadataObjkt(data.event[i].token)
-    const dados2 = tratarDadosLive(data.event[i])
+    const metadata2 = tratarMetadataObjkt(data_actions.event[i].token)
+    const dados2 = tratarDadosLive(data_actions.event[i])
     const token2 = {
-      token: metadata,
-      dados: dados
+      token: metadata2,
+      dados: dados2
     }
     tokens.push(token2);
 
   }
-  return tokens
+  const sortedTokens = tokens.sort((a, b) => new Date(a.dados.timestamp) - new Date(b.dados.timestamp));
+  sortedTokens.reverse()
+  return sortedTokens;
 }
 
 export { loadFx, loadObjkt, liveFeed };
