@@ -1,5 +1,5 @@
 import axios from "axios";
-import { resultadoParcial, tratarIpfs, bytes2Char, nftInfo, procurarMint } from "../utils/utils.js";
+import { resultadoParcial, tratarIpfs, bytes2Char, nftInfo, procurarMint } from "../utils/utils_v1.js";
 
 const step = 100;
 const step_ = 30;

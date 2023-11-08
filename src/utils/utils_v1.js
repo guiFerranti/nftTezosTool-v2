@@ -1,4 +1,3 @@
-import { getBurnedTokens } from "../api/api.js";
 import { validateAddress } from '@taquito/utils';
 
 function validateAdd(address) {
@@ -55,24 +54,6 @@ async function nftInfo(lote, address=null) {
             console.log('erro in nftInfo')
             console.log(e)
         }
-        // 
-        // try {
-        //     const [user_balance, burned_balance] = await getBurnedTokens(tokenId, address)
-        //     if (data.creators) {
-        //         if (item['balance'] && data.creators.indexOf (address) === -1) {
-        //             const totalSupply = item.token['totalSupply'] - burned_balance;
-        //             const balance = user_balance;
-        //             const obj = resultadoParcial(name, description, image, creators, balance, totalSupply, contract, token_id);
-        //             lista.push(obj)
-        //         }
-        //         else if (address === null) {
-        //             const obj = resultadoParcial(name, description, image, creators, null, null,contract, token_id);
-        //             lista.push(obj);
-        //         }
-        //     }
-        // } catch (e) {   
-        //     console.log(e)
-        // }
     }
     return lista;
 }
