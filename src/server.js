@@ -23,7 +23,7 @@ app.get('/sales/:address', async (req, res)=> {
         const response = await sortTokens(address);
         res.json(response)
     } catch (e) {
-        console.log(e)
+        res.status(500).json("Error")
     }
 
 })
@@ -33,17 +33,19 @@ app.get('/live_feed', async (req, res) => {
         const response = await liveFeed();
         res.json(response)
     } catch (e) {
-        console.log(e)
+        res.status(500).json("Error")
     }
 })
 
 app.get('/following_table/:address', async (req, res) => {
-    const address = req.params.address;
+    const addresses = req.params.address;
     try {
-        const response = await following_analysis(address);
+        const response = await following_analysis(addresses);
         res.json(response);
     } catch (e) {
-        console.log(e);
+        console.log(e)
+        res.status(500).json("Error")
+
     }
 })
  

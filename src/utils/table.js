@@ -1,5 +1,4 @@
 function userData(data) {
-
     const userData = {
         wallet: data['address'],
         twitter: data['twitter'],

@@ -66,34 +66,40 @@ async function totalEdBS(address) {
 
 
 
-async function following_analysis(address) {
-    const variables = {
-        address: address
+async function following_analysis(addresses) {
+    const address = addresses.split(",");
+    const listResults = []
+    for (const add of address) {
+      console.log(add)
+      const variables = {
+          address: add
+      }
+  
+      //consultas api
+      const plData_ = await axios.get(`${baseUrlTzPro}explorer/account/${add}?api_key=${api_key}`)
+      const tokenBalData = await axios.get(`${baseUrlTzkt}v1/tokens/balances?account=${add}&limit=1000&balance.gt=0`)
+      const userData_ = await request(baseUrlOBJKT, userDataRequest, variables);
+      const mintDateFirst = await request(baseUrlOBJKT, userMintedFirst, variables);
+      const mintDateLast = await request(baseUrlOBJKT, userMintedLast, variables);
+      const transfers = await totalEdBS(address);
+  
+      // tratar dados
+      const userTratado = userData(userData_.event[0].creator);
+      const plTratado = PL(plData_.data);
+      const mintDate = firstLastMint(mintDateFirst.token[0], mintDateLast.token[0]);
+      const tokenBalance = tokensCount(tokenBalData.data)
+  
+      //objeto
+      const dados = {
+          user_info: userTratado,
+          pl: plTratado,
+          mint_info: mintDate,
+          token_transfers: transfers,
+          token_balance: tokenBalance
+      }
+      listResults.push(dados);
     }
-
-    //consultas api
-    const plData_ = await axios.get(`${baseUrlTzPro}explorer/account/${address}?api_key=${api_key}`)
-    const tokenBalData = await axios.get(`${baseUrlTzkt}v1/tokens/balances?account=${address}&limit=1000&balance.gt=0`)
-    const userData_ = await request(baseUrlOBJKT, userDataRequest, variables);
-    const mintDateFirst = await request(baseUrlOBJKT, userMintedFirst, variables);
-    const mintDateLast = await request(baseUrlOBJKT, userMintedLast, variables);
-    const transfers = await totalEdBS(address);
-
-    // tratar dados
-    const userTratado = userData(userData_.event[0].creator);
-    const plTratado = PL(plData_.data);
-    const mintDate = firstLastMint(mintDateFirst.token[0], mintDateLast.token[0]);
-    const tokenBalance = tokensCount(tokenBalData.data)
-    
-    //objeto
-    const dados = {
-        user_info: userTratado,
-        pl: plTratado,
-        mint_info: mintDate,
-        token_transfers: transfers,
-        token_balance: tokenBalance
-    }
-    return dados;
+    return listResults;
 }
 
 export { following_analysis };
