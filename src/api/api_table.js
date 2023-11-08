@@ -70,7 +70,6 @@ async function following_analysis(addresses) {
     const address = addresses.split(",");
     const listResults = []
     for (const add of address) {
-      console.log(add)
       const variables = {
           address: add
       }
