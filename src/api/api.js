@@ -106,7 +106,6 @@ query MyQuery {
 }
 `
 
-
 async function loadFx(address) {
     const variables = {
         usernameOrAddress: address
