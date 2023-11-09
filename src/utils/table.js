@@ -33,20 +33,17 @@ function firstLastMint(first, last) {
     }
     return mints;
 }
-//tz2KbXVAfzDw8JX3WVTPjgePrqtPYQiUmyc4
-//
 
 function tokensCount(data) {
     let edition = 0;
     const totalToken = data.length;
-    for(let k of data) {   
-        edition += parseInt(k['balance']);
+    for(let k of data) {  
+        if (k.token.metadata['artifactUri']) {
+            edition += parseInt(k['balance']);
+        }
     }
 
     return {token: totalToken, edition: edition};
 }
-//tokens length
-//first mint last
-// ed ??
 
 export { PL, userData, firstLastMint, tokensCount };

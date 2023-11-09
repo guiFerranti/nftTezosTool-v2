@@ -2,7 +2,7 @@ import axios from 'axios';
 import { request, gql } from 'graphql-request';
 import { PL, userData, firstLastMint, tokensCount } from '../utils/table.js'
 
-const api_key = process.env.API_KEY;
+const api_key = process.env.API_KEY || '90SNJX492YSDRLTL3ZEQZ12L3YD17I3';
 const baseUrlOBJKT = 'https://data.objkt.com/v3/graphql/';
 const baseUrlTzPro = 'https://api.tzpro.io/';
 const baseUrlTzkt = 'https://api.tzkt.io/';
@@ -73,7 +73,7 @@ async function following_analysis(addresses) {
 
     //consultas api
     const plData_ = await axios.get(`${baseUrlTzPro}explorer/account/${add}?api_key=${api_key}`)
-    const tokenBalData = await axios.get(`${baseUrlTzkt}v1/tokens/balances?account=${add}&limit=1000&balance.gt=0`)
+    const tokenBalData = await axios.get(`${baseUrlTzkt}v1/tokens/balances?account=${add}&limit=1000&balance.gt=0&token.standard=fa2`)
     const userData_ = await request(baseUrlOBJKT, userDataRequest, variables);
     const mintDateFirst = await request(baseUrlOBJKT, userMintedFirst, variables);
     const mintDateLast = await request(baseUrlOBJKT, userMintedLast, variables);

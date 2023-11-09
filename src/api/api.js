@@ -192,7 +192,6 @@ async function minted(address) {
   const tokens = []
   const data = await request(baseUrlOBJKT, mint, variables);
   for (const item of data.event) {
-    console.log(item)
     const metadata = tratarMetadataObjkt(item.token)
     const token = {
       metadata: metadata,
