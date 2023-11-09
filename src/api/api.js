@@ -135,7 +135,6 @@ query MyQuery($address: String!) {
 }
 `
 
-
 async function sales(address) {
     const variables = {
         usernameOrAddress: address
@@ -219,6 +218,7 @@ async function token_balance(address) {
     const token = {
       metadata: metadata,
       contract: item['fa_contract'],
+      creators: item.creators[0]['creators'],
       editions: {
         supply: item['supply'],
         owned: item.holders[0]['quantity']
