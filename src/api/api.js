@@ -128,9 +128,11 @@ query MyQuery($address: String!) {
       quantity
     }
     fa_contract
+    creators {
+      creator_address
+    }
   }
 }
-
 `
 
 
