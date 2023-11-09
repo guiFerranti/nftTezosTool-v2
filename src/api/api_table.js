@@ -3,7 +3,7 @@ import { request, gql } from 'graphql-request';
 import { PL, userData, firstLastMint, tokensCount } from '../utils/table.js'
 
 
-const api_key = '90SNJX492YSDRLTL3ZEQZ12L3YD17I3';
+const api_key = process.env.API_KEY;
 const baseUrlOBJKT = 'https://data.objkt.com/v3/graphql/';
 const baseUrlTzPro = 'https://api.tzpro.io/';
 const baseUrlTzkt = 'https://api.tzkt.io/';
@@ -63,8 +63,6 @@ async function totalEdBS(address) {
     const buy = await axios.get(`${baseUrlTzPro}v1/wallets/${address}/nft_trades?buyer=${address}&limit=10000&api_key=${api_key}`);
     return {sold: sold.data.length, buy: buy.data.length};
 }
-
-
 
 async function following_analysis(addresses) {
     const address = addresses.split(",");

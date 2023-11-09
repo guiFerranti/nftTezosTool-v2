@@ -88,7 +88,10 @@ query MyQuery {
 
 const mint = gql`
 query MyQuery($address: String!) {
-  event(where: {creator: {address: {_eq: $address}}, event_type: {_eq: "mint"}}) {
+  event(
+    where: {creator: {address: {_eq: $address}}, event_type: {_eq: "mint"}}
+    order_by: {timestamp: desc}
+  ) {
     fa_contract
     token {
       artifact_uri
@@ -104,6 +107,28 @@ query MyQuery($address: String!) {
     timestamp
     event_type
     marketplace_event_type
+  }
+}
+`
+
+const tokens_bal = gql`
+query MyQuery($address: String!) {
+  token(
+    where: {holders: {holder_address: {_eq: $address}, quantity: {_gt: "0"}}, creators: {creator_address: {_nin: [$address]}}}
+    order_by: {timestamp: desc}
+  ) {
+    artifact_uri
+    display_uri
+    mime
+    name
+    ophash
+    supply
+    timestamp
+    token_id
+    holders(where: {holder_address: {_eq: $address}, quantity: {_gt: "0"}}) {
+      holder_address
+      quantity
+    }
   }
 }
 `
@@ -171,7 +196,8 @@ async function minted(address) {
     const token = {
       metadata: metadata,
       creators: item.token.creators,
-      contract: item['fa_contract']
+      contract: item['fa_contract'],
+      supply: item.token['supply']
     }
     tokens.push(token);
   }
@@ -179,8 +205,28 @@ async function minted(address) {
 }
 
 async function token_balance(address) {
-  const tokenBalData = await axios.get(`${baseUrlTzkt}v1/tokens/balances?account=${address}&limit=1000&balance.gt=0`);
-  console.log(tokenBalData.data)
+  const variables = {
+    address: address
+  }
+  const tokenBalData = await request(baseUrlOBJKT, tokens_bal, variables);
+  const tokens = [];
+  console.log(tokenBalData.token)
+  for (const item of tokenBalData.token) {
+
+    const metadata = tratarMetadataObjkt(item);
+    const token = {
+      metadata: metadata,
+      contract: item['fa_contract'],
+      editions: {
+        supply: item['supply'],
+        owned: item.holders[0]['quantity']
+      },
+      timestamp: item['timestamp']
+    }
+    tokens.push(token);
+  }
+  return tokens;
 }
 
 export { sales, liveFeed, minted, token_balance };
+//{"address": "tz1V21HQQHXaKvmzRAMYWRwJNSh69crC7EXC"}
