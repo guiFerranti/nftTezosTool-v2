@@ -2,7 +2,6 @@ import { request, gql } from 'graphql-request';
 import { tratarMetadataObjkt, tratarDadosObjkt, tratarDadosLive } from '../utils/utils.js'
 
 const baseUrlOBJKT = 'https://data.objkt.com/v3/graphql/';
-const baseUrlTzkt = 'https://api.tzkt.io/';
 
 const objkt = gql`
 query MyQuery($usernameOrAddress: String) {
@@ -128,8 +127,10 @@ query MyQuery($address: String!) {
       holder_address
       quantity
     }
+    fa_contract
   }
 }
+
 `
 
 

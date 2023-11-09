@@ -1,6 +1,3 @@
-import dotenv from 'dotenv';
-dotenv.config();
-
 import { validateAdd } from './utils/utils.js';
 import { liveFeed, sales, minted, token_balance } from './api/api.js'
 import express from 'express';
