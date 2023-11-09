@@ -37,9 +37,11 @@ function firstLastMint(first, last) {
 function tokensCount(data) {
     let edition = 0;
     const totalToken = data.length;
-    for(let k of data) {  
-        if (k.token.metadata['artifactUri']) {
-            edition += parseInt(k['balance']);
+    for(let k of data) {
+        if (k.token.metadata) {
+            if (k.token.metadata['artifactUri']) {
+                edition += parseInt(k['balance']);
+            }
         }
     }
 
