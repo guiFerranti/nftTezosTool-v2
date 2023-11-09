@@ -1,11 +1,12 @@
 import dotenv from 'dotenv';
+dotenv.config();
+
 import { validateAdd } from './utils/utils.js';
 import { liveFeed, sales, minted, token_balance } from './api/api.js'
 import express from 'express';
 import { following_analysis } from './api/api_table.js';
 
 
-dotenv.config();
 const app = express();
 const port = process.env.PORT || 3000;
 
@@ -87,9 +88,3 @@ app.get('/token_balance/:address', async (req, res) => {
         res.status(500).json("Erro")
     }
 })
-
-
-
-
-
-
