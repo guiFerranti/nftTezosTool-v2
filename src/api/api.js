@@ -1,6 +1,5 @@
 import { request, gql } from 'graphql-request';
 import { tratarMetadataObjkt, tratarDadosObjkt, tratarDadosLive } from '../utils/utils.js'
-import axios from 'axios';
 
 const baseUrlOBJKT = 'https://data.objkt.com/v3/graphql/';
 const baseUrlTzkt = 'https://api.tzkt.io/';

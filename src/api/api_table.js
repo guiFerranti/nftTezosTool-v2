@@ -2,7 +2,6 @@ import axios from 'axios';
 import { request, gql } from 'graphql-request';
 import { PL, userData, firstLastMint, tokensCount } from '../utils/table.js'
 
-
 const api_key = process.env.API_KEY;
 const baseUrlOBJKT = 'https://data.objkt.com/v3/graphql/';
 const baseUrlTzPro = 'https://api.tzpro.io/';
@@ -65,38 +64,38 @@ async function totalEdBS(address) {
 }
 
 async function following_analysis(addresses) {
-    const address = addresses.split(",");
-    const listResults = []
-    for (const add of address) {
-      const variables = {
-          address: add
-      }
-  
-      //consultas api
-      const plData_ = await axios.get(`${baseUrlTzPro}explorer/account/${add}?api_key=${api_key}`)
-      const tokenBalData = await axios.get(`${baseUrlTzkt}v1/tokens/balances?account=${add}&limit=1000&balance.gt=0`)
-      const userData_ = await request(baseUrlOBJKT, userDataRequest, variables);
-      const mintDateFirst = await request(baseUrlOBJKT, userMintedFirst, variables);
-      const mintDateLast = await request(baseUrlOBJKT, userMintedLast, variables);
-      const transfers = await totalEdBS(add);
-  
-      // tratar dados
-      const userTratado = userData(userData_.event[0].creator);
-      const plTratado = PL(plData_.data);
-      const mintDate = firstLastMint(mintDateFirst.token[0], mintDateLast.token[0]);
-      const tokenBalance = tokensCount(tokenBalData.data)
-  
-      //objeto
-      const dados = {
-          user_info: userTratado,
-          pl: plTratado,
-          mint_info: mintDate,
-          token_transfers: transfers,
-          token_balance: tokenBalance
-      }
-      listResults.push(dados);
+  const address = addresses.split(",");
+  const listResults = []
+  for (const add of address) {
+    const variables = {
+        address: add
     }
-    return listResults;
+
+    //consultas api
+    const plData_ = await axios.get(`${baseUrlTzPro}explorer/account/${add}?api_key=${api_key}`)
+    const tokenBalData = await axios.get(`${baseUrlTzkt}v1/tokens/balances?account=${add}&limit=1000&balance.gt=0`)
+    const userData_ = await request(baseUrlOBJKT, userDataRequest, variables);
+    const mintDateFirst = await request(baseUrlOBJKT, userMintedFirst, variables);
+    const mintDateLast = await request(baseUrlOBJKT, userMintedLast, variables);
+    const transfers = await totalEdBS(add);
+
+    // tratar dados
+    const userTratado = userData(userData_.event[0].creator);
+    const plTratado = PL(plData_.data);
+    const mintDate = firstLastMint(mintDateFirst.token[0], mintDateLast.token[0]);
+    const tokenBalance = tokensCount(tokenBalData.data)
+
+    //objeto
+    const dados = {
+        user_info: userTratado,
+        pl: plTratado,
+        mint_info: mintDate,
+        token_transfers: transfers,
+        token_balance: tokenBalance
+    }
+    listResults.push(dados);
+  }
+  return listResults;
 }
 
 export { following_analysis };

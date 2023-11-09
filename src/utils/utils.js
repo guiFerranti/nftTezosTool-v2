@@ -6,30 +6,6 @@ function validateAdd(address) {
     return validation;
 }
 
-function tratarMetadataFx(data) {
-    const metadata = {
-        name: data.metadata['name'],
-        artifact_uri: data.metadata['artifactUri'],
-        display_uri: data.metadata['displayUri'],
-        mime: data.captureMedia['mimeType'],
-        token_id: data['onChainId'],
-        contract: data['contract'] || null
-    }
-    return(metadata);
-}
-
-function tratarDadosFx(data) {
-    const dados = {
-        timestamp: data['createdAt'],
-        price: data['price'],
-        amount: data['amount'],
-        amount_left: data['amount'],
-        contract: null,
-        status: 'active'
-    }
-    return dados;
-}
-
 function tratarMetadataObjkt(data) {
     const metadata = {
         name: data['name'],
@@ -74,4 +50,4 @@ function tratarDadosLive(data) {
     return EventTratado;
 }
 
-export { tratarMetadataFx, tratarDadosFx, tratarMetadataObjkt, tratarDadosObjkt, tratarDadosLive, validateAdd };
+export { tratarMetadataObjkt, tratarDadosObjkt, tratarDadosLive, validateAdd };
