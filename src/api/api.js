@@ -1,5 +1,9 @@
 import { request, gql } from 'graphql-request';
-import { tratarMetadataFx, tratarDadosFx, tratarMetadataObjkt, tratarDadosObjkt, tratarDadosLive } from '../utils/utils.js'
+import { tratarMetadataObjkt, tratarDadosObjkt, tratarDadosLive } from '../utils/utils.js'
+import axios from 'axios';
+
+const baseUrlOBJKT = 'https://data.objkt.com/v3/graphql/';
+const baseUrlTzkt = 'https://api.tzkt.io/';
 
 const objkt = gql`
 query MyQuery($usernameOrAddress: String) {
@@ -25,30 +29,6 @@ query MyQuery($usernameOrAddress: String) {
     }
   }
   `
-
-const fxhash = gql`
-query Query($usernameOrAddress: String) {
-    account(usernameOrAddress: $usernameOrAddress) {
-      listings {
-        id
-        version
-        amount
-        price
-        royalties
-        createdAt
-        cancelledAt
-        acceptedAt
-        objkt {
-          metadata
-          captureMedia {
-            mimeType
-          }
-          onChainId
-        }
-      }
-    }
-  }
-`
 
 const live_feed_mints = gql`
 query MyQuery {
@@ -106,35 +86,35 @@ query MyQuery {
 }
 `
 
-async function loadFx(address) {
-    const variables = {
-        usernameOrAddress: address
+const mint = gql`
+query MyQuery($address: String!) {
+  event(where: {creator: {address: {_eq: $address}}, event_type: {_eq: "mint"}}) {
+    fa_contract
+    token {
+      artifact_uri
+      display_uri
+      name
+      mime
+      token_id
+      supply
+      creators {
+        creator_address
+      }
     }
-    const tokens = []
-    const data = await request ('https://api.fxhash.xyz/graphql/', fxhash, variables);
-    // pegar o tamanho da lista
-    const tam = data.account.listings.length;
-    // usar o tamanho para percorrer o array
-    for (let i = 0; i < tam; i++) {
-        // tratar cada dados
-        const metadata = tratarMetadataFx(data.account.listings[i].objkt)
-        const dados = tratarDadosFx(data.account.listings[i])
-        // fazer o objeto
-        const token = {
-            metadata: metadata,
-            dados: dados
-        }
-        tokens.push(token);
-    }
-    return tokens;
+    timestamp
+    event_type
+    marketplace_event_type
+  }
 }
+`
 
-async function loadObjkt(address) {
+
+async function sales(address) {
     const variables = {
         usernameOrAddress: address
     }
     const tokens = [];
-    const data = await request ('https://data.objkt.com/v3/graphql/', objkt, variables);
+    const data = await request (baseUrlOBJKT, objkt, variables);
     // tam da lista
     const tam = data.listing.length;
     // varrer os itens
@@ -147,13 +127,13 @@ async function loadObjkt(address) {
         }
         tokens.push(token);
     }
-
+    return tokens;
 }
 
 async function liveFeed() {
   const tokens = [];
-  const data = await request ('https://data.objkt.com/v3/graphql/', live_feed_mints);
-  const data_actions = await request ('https://data.objkt.com/v3/graphql/', live_feed_actions);
+  const data = await request (baseUrlOBJKT, live_feed_mints);
+  const data_actions = await request (baseUrlOBJKT, live_feed_actions);
   const tam = data.event.length;
   for (let i = 0; i < tam; i++){
     // dado mints
@@ -179,4 +159,28 @@ async function liveFeed() {
   return sortedTokens;
 }
 
-export { loadFx, loadObjkt, liveFeed };
+async function minted(address) {
+  const variables = {
+    address: address
+  }
+  const tokens = []
+  const data = await request(baseUrlOBJKT, mint, variables);
+  for (const item of data.event) {
+    console.log(item)
+    const metadata = tratarMetadataObjkt(item.token)
+    const token = {
+      metadata: metadata,
+      creators: item.token.creators,
+      contract: item['fa_contract']
+    }
+    tokens.push(token);
+  }
+  return tokens;
+}
+
+async function token_balance(address) {
+  const tokenBalData = await axios.get(`${baseUrlTzkt}v1/tokens/balances?account=${address}&limit=1000&balance.gt=0`);
+  console.log(tokenBalData.data)
+}
+
+export { sales, liveFeed, minted, token_balance };

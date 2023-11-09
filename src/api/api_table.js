@@ -80,7 +80,7 @@ async function following_analysis(addresses) {
       const userData_ = await request(baseUrlOBJKT, userDataRequest, variables);
       const mintDateFirst = await request(baseUrlOBJKT, userMintedFirst, variables);
       const mintDateLast = await request(baseUrlOBJKT, userMintedLast, variables);
-      const transfers = await totalEdBS(address);
+      const transfers = await totalEdBS(add);
   
       // tratar dados
       const userTratado = userData(userData_.event[0].creator);

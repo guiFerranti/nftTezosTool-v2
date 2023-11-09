@@ -1,4 +1,10 @@
-import { loadFx, loadObjkt } from '../api/api.js'
+import { validateAddress } from '@taquito/utils';
+
+
+function validateAdd(address) {
+    const validation = validateAddress(address);
+    return validation;
+}
 
 function tratarMetadataFx(data) {
     const metadata = {
@@ -68,16 +74,4 @@ function tratarDadosLive(data) {
     return EventTratado;
 }
 
-async function sortTokens(address) {
-    const tokens_objkt = await loadObjkt(address);
-    const tokens_fx = await loadFx(address);
-    const AllTokens = tokens_objkt.concat(tokens_fx);
-
-    const sortedTokens = AllTokens.sort((a, b) => new Date(a.dados.timestamp) - new Date(b.dados.timestamp));
-    sortedTokens.reverse()
-
-    return sortedTokens;
-}
-
-
-export { tratarMetadataFx, tratarDadosFx, tratarMetadataObjkt, tratarDadosObjkt, sortTokens, tratarDadosLive };
+export { tratarMetadataFx, tratarDadosFx, tratarMetadataObjkt, tratarDadosObjkt, tratarDadosLive, validateAdd };
