@@ -2,7 +2,13 @@ import { validateAdd } from './utils/utils.js';
 import { liveFeed, sales, minted, token_balance } from './api/api.js'
 import express from 'express';
 import { following_analysis } from './api/api_table.js';
-
+import validateRoutes from './routes/validateRoutes.js'
+import salesRoutes from './routes/salesRoutes.js'
+import liveFeedRoutes from './routes/liveFeedRoutes.js'
+import followingTableRoutes from './routes/followingTableRoutes.js'
+import CollectingSalesRoutes from './routes/CollectingSalesRoutes.js'
+import mintRoutes from './routes/mintRoutes.js'
+import tokenBalanceRoutes from './routes/tokenBalanceRoutes.js'
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -16,72 +22,15 @@ app.get('/', (req, res) => {
     res.json('Working')
 })
 
-app.get('/validate/:address', async (req, res) => {
-    const address = req.params.address;
-
-    try {
-        const response = validateAdd(address);
-        res.json(response)
-    } catch (e) {
-        console.log(e)
-    }
-})
-
-app.get('/sales/:address', async (req, res)=> {
-    const address = req.params.address;
-    try {
-        const response = await sales(address);
-        res.json(response)
-    } catch (e) {
-        console.log(e)
-        res.status(500).json("Error")
-    }
-
-})
-
-app.get('/live_feed', async (req, res) => {
-    try {
-        const response = await liveFeed();
-        res.json(response)
-    } catch (e) {
-        res.status(500).json("Error")
-    }
-})
-
-app.get('/following_table/:address', async (req, res) => {
-    const addresses = req.params.address;
-    try {
-        const response = await following_analysis(addresses);
-        res.json(response);
-    } catch (e) {
-        console.log(e)
-        res.status(500).json("Error")
-
-    }
-})
+app.use('/validate', validateRoutes);
+app.use('/sales', salesRoutes)
+app.use('/live_feed', liveFeedRoutes)
+app.use('/following_table', followingTableRoutes)
+app.use('/collecting_sales', CollectingSalesRoutes)
  
 //==================================
 //==== TOOLS FROM V1 (rebuild) =====
 //==================================
 
-app.get('/mint/:address', async (req, res) => {
-    const address = req.params.address;
-    try {
-        const result = await minted(address);
-        res.json(result)
-    } catch (e) {
-        console.log(e)
-        res.status(500).json("Error")
-    }
-})
-
-app.get('/token_balance/:address', async (req, res) => {
-    const address = req.params.address;
-    try {
-        const result = await token_balance(address);
-        res.json(result)
-    } catch (e) {
-        console.log(e);
-        res.status(500).json("Erro")
-    }
-})
+app.use('/mint', mintRoutes)
+app.use('/token_balance', tokenBalanceRoutes)

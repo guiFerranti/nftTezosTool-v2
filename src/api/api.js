@@ -211,7 +211,6 @@ async function token_balance(address) {
   const tokenBalData = await request(baseUrlOBJKT, tokens_bal, variables);
   const tokens = [];
   for (const item of tokenBalData.token) {
-    console.log(item.creators[0]['creator_address'])
     const metadata = tratarMetadataObjkt(item);
     const token = {
       metadata: metadata,
