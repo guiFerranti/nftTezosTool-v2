@@ -53,13 +53,7 @@ function tratarDadosLive(data) {
 function tratarDadosSell(data) {
     const tokens = data.reduce((r, a) => {
         if (!r[a.buyer_address]) {
-          r[a.buyer_address] = { 
-            domain: a.buyer.tzdomain,
-            name: a.buyer.alias,
-            totalTokens: 0,
-            totalEditions: 0,
-            price: 0,
-            tokens: {} };
+          r[a.buyer_address] = { address: a.buyer_address, domain: a.buyer.tzdomain, name: a.buyer.alias , totalTokens: 0, totalEditions: 0, price: 0, tokens: {} };
         }
         if (!r[a.buyer_address].tokens[a.token_pk]) {
           r[a.buyer_address].tokens[a.token_pk] = { amount: 0 };
@@ -71,14 +65,11 @@ function tratarDadosSell(data) {
         return r;
       }, {});
 
+    const sortedTokens = Object.values(tokens).sort((a, b) => b.price - a.price);
 
-    const sortedTokens = Object.entries(tokens).sort((a, b) => b[1].price - a[1].price);
-
-
-    const sortedTokensObject = Object.fromEntries(sortedTokens);
-
-    return sortedTokensObject;
+    return sortedTokens;
 }
+
 
 
 
