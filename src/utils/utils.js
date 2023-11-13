@@ -88,28 +88,38 @@ function tratarDadosBuy(data) {
             totalEditions: 0,
             price: 0,
             tokens: {},
-            sales: 0 };
+            sales: 0,
+            PL: 0 };
         }
         if (!r[a.seller_address].tokens[a.token_pk]) {
-          r[a.seller_address].tokens[a.token_pk] = { amount: 0, sales: 0 };
+          r[a.seller_address].tokens[a.token_pk] = { amount: 0, sales: 0, PL: 0 };
           r[a.seller_address].totalTokens += 1;        
         }
         r[a.seller_address].tokens[a.token_pk].amount += a.amount;
         r[a.seller_address].totalEditions += a.amount;
         r[a.seller_address].price += a.price;
 
+        // Adiciona informações de venda e calcula PL
         if (a.token.listing_sales && a.token.listing_sales.length > 0) {
-          r[a.seller_address].tokens[a.token_pk].sales = a.token.listing_sales[0].price;
-          r[a.seller_address].sales += a.token.listing_sales[0].price;
+          a.token.listing_sales.forEach(sale => {
+            r[a.seller_address].tokens[a.token_pk].sales += sale.price;
+            r[a.seller_address].sales += sale.price;
+
+            // Calcula PL para cada venda
+            const PL = sale.price - a.price;
+            r[a.seller_address].tokens[a.token_pk].PL += PL;
+          });
         }
 
         return r;
       }, {});
 
-    const sortedTokens = Object.values(tokens).sort((a, b) => b.price - a.price);
-    
-    return sortedTokens;
+    const tokenSorted = Object.values(tokens).sort((a, b) => b.price - a.price);
+
+    return tokenSorted;
 }
+
+
 
 
 
