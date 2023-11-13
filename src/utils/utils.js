@@ -100,15 +100,16 @@ function tratarDadosBuy(data) {
         r[a.seller_address].price += a.price;
 
         if (a.token.listing_sales && a.token.listing_sales.length > 0) {
-          a.token.listing_sales.forEach(sale => {
-            r[a.seller_address].tokens[a.token_pk].sales += sale.price;
-            r[a.seller_address].sales += sale.price;
-
-            const PL = sale.price - a.price;
-            r[a.seller_address].tokens[a.token_pk].PL += PL;
-            r[a.seller_address].PL += PL;
-          });
-        }
+            a.token.listing_sales.forEach(sale => {
+              let totalSalePrice = sale.price * sale.amount;
+              r[a.seller_address].tokens[a.token_pk].sales += totalSalePrice;
+              r[a.seller_address].sales += totalSalePrice;
+          
+              const PL = totalSalePrice - a.price;
+              r[a.seller_address].tokens[a.token_pk].PL += PL;
+              r[a.seller_address].PL += PL;
+            });
+          }
 
         return r;
       }, {});
