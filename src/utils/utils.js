@@ -78,7 +78,7 @@ function tratarDadosSell(data) {
 }
 
 function tratarDadosBuy(data) {
-    const tokens = data.reduce((r, a) => {
+     const tokens = data.reduce((r, a) => {
         if (!r[a.seller_address]) {
           r[a.seller_address] = { 
             address: a.seller_address,
@@ -92,7 +92,7 @@ function tratarDadosBuy(data) {
             PL: 0 };
         }
         if (!r[a.seller_address].tokens[a.token_pk]) {
-          r[a.seller_address].tokens[a.token_pk] = { amount: 0, sales: 0, PL: 0 };
+          r[a.seller_address].tokens[a.token_pk] = { amount: 0, sales: 0, PL: 0, purchasePriceAdded: false };
           r[a.seller_address].totalTokens += 1;        
         }
         r[a.seller_address].tokens[a.token_pk].amount += a.amount;
@@ -100,16 +100,20 @@ function tratarDadosBuy(data) {
         r[a.seller_address].price += a.price;
 
         if (a.token.listing_sales && a.token.listing_sales.length > 0) {
-            a.token.listing_sales.forEach(sale => {
-              let totalSalePrice = sale.price * sale.amount;
-              r[a.seller_address].tokens[a.token_pk].sales += totalSalePrice;
-              r[a.seller_address].sales += totalSalePrice;
-          
-              const PL = totalSalePrice - a.price;
-              r[a.seller_address].tokens[a.token_pk].PL += PL;
-              r[a.seller_address].PL += PL;
-            });
-          }
+          a.token.listing_sales.forEach(sale => {
+            let totalSalePrice = sale.price * sale.amount;
+            r[a.seller_address].tokens[a.token_pk].sales += totalSalePrice;
+            r[a.seller_address].sales += totalSalePrice;
+
+            let PL = totalSalePrice;
+            if (!r[a.seller_address].tokens[a.token_pk].purchasePriceAdded) {
+              PL -= a.price;
+              r[a.seller_address].tokens[a.token_pk].purchasePriceAdded = true;
+            }
+            r[a.seller_address].tokens[a.token_pk].PL += PL;
+            r[a.seller_address].PL += PL;
+          });
+        }
 
         return r;
       }, {});
