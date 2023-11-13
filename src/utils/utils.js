@@ -87,21 +87,26 @@ function tratarDadosBuy(data) {
             totalTokens: 0,
             totalEditions: 0,
             price: 0,
-            tokens: {} };
+            tokens: {},
+            sales: 0 };
         }
         if (!r[a.seller_address].tokens[a.token_pk]) {
-          r[a.seller_address].tokens[a.token_pk] = { amount: 0 };
+          r[a.seller_address].tokens[a.token_pk] = { amount: 0, sales: 0 };
           r[a.seller_address].totalTokens += 1;        
         }
         r[a.seller_address].tokens[a.token_pk].amount += a.amount;
         r[a.seller_address].totalEditions += a.amount;
         r[a.seller_address].price += a.price;
+
+        if (a.token.listing_sales && a.token.listing_sales.length > 0) {
+          r[a.seller_address].tokens[a.token_pk].sales = a.token.listing_sales[0].price;
+          r[a.seller_address].sales += a.token.listing_sales[0].price;
+        }
+
         return r;
       }, {});
-
-    const sortedTokens = Object.values(tokens).sort((a, b) => b.price - a.price);
-
-    return sortedTokens;
+    return tokens;
 }
+
 
 export { tratarMetadataObjkt, tratarDadosObjkt, tratarDadosLive, validateAdd, tratarDadosSell, tratarDadosBuy };

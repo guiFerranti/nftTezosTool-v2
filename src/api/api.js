@@ -163,6 +163,12 @@ query MyQuery($address: String!, $offset: Int!) {
     }
     amount
     seller_address
+    token {
+      listing_sales(where: {seller_address: {_eq: $address}}) {
+        amount
+        price
+      }
+    }
   }
 }
 `
