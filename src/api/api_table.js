@@ -2,7 +2,7 @@ import axios from 'axios';
 import { request, gql } from 'graphql-request';
 import { PL, userData, firstLastMint, tokensCount } from '../utils/table.js'
 
-const api_key = process.env.API_KEY || '90SNJX492YSDRLTL3ZEQZ12L3YD17I3';
+const api_key = process.env.API_KEY;
 const baseUrlOBJKT = 'https://data.objkt.com/v3/graphql/';
 const baseUrlTzPro = 'https://api.tzpro.io/';
 const baseUrlTzkt = 'https://api.tzkt.io/';

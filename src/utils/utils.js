@@ -50,4 +50,36 @@ function tratarDadosLive(data) {
     return EventTratado;
 }
 
-export { tratarMetadataObjkt, tratarDadosObjkt, tratarDadosLive, validateAdd };
+function tratarDadosSell(data) {
+    const tokens = data.reduce((r, a) => {
+        if (!r[a.buyer_address]) {
+          r[a.buyer_address] = { 
+            domain: a.buyer.tzdomain,
+            name: a.buyer.alias,
+            totalTokens: 0,
+            totalEditions: 0,
+            price: 0,
+            tokens: {} };
+        }
+        if (!r[a.buyer_address].tokens[a.token_pk]) {
+          r[a.buyer_address].tokens[a.token_pk] = { amount: 0 };
+          r[a.buyer_address].totalTokens += 1;        
+        }
+        r[a.buyer_address].tokens[a.token_pk].amount += a.amount;
+        r[a.buyer_address].totalEditions += a.amount;
+        r[a.buyer_address].price += a.price;
+        return r;
+      }, {});
+
+
+    const sortedTokens = Object.entries(tokens).sort((a, b) => b[1].price - a[1].price);
+
+
+    const sortedTokensObject = Object.fromEntries(sortedTokens);
+
+    return sortedTokensObject;
+}
+
+
+
+export { tratarMetadataObjkt, tratarDadosObjkt, tratarDadosLive, validateAdd, tratarDadosSell };
