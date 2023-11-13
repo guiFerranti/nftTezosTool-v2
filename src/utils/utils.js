@@ -99,25 +99,25 @@ function tratarDadosBuy(data) {
         r[a.seller_address].totalEditions += a.amount;
         r[a.seller_address].price += a.price;
 
-        // Adiciona informações de venda e calcula PL
         if (a.token.listing_sales && a.token.listing_sales.length > 0) {
           a.token.listing_sales.forEach(sale => {
             r[a.seller_address].tokens[a.token_pk].sales += sale.price;
             r[a.seller_address].sales += sale.price;
 
-            // Calcula PL para cada venda
             const PL = sale.price - a.price;
             r[a.seller_address].tokens[a.token_pk].PL += PL;
+            r[a.seller_address].PL += PL;
           });
         }
 
         return r;
       }, {});
 
-    const tokenSorted = Object.values(tokens).sort((a, b) => b.price - a.price);
+    const sortedTokens = Object.values(tokens).sort((a, b) => b.price - a.price);
 
-    return tokenSorted;
+    return sortedTokens;
 }
+
 
 
 
