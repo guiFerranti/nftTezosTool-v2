@@ -30,7 +30,7 @@ function tratarDadosObjkt(data) {
 }
 
 function tratarDadosLive(data) {
-    
+
     const events = {
         list_create: "List",
         list_buy: "Buy",
@@ -78,7 +78,7 @@ function tratarDadosSell(data) {
 }
 
 function tratarDadosBuy(data) {
-     const tokens = data.reduce((r, a) => {
+    const tokens = data.reduce((r, a) => {
         if (!r[a.seller_address]) {
           r[a.seller_address] = { 
             address: a.seller_address,
@@ -120,12 +120,31 @@ function tratarDadosBuy(data) {
 
     const sortedTokens = Object.values(tokens).sort((a, b) => b.price - a.price);
 
+    // Calculate total spent and total earned
+    let totalSpent = 0;
+    let totalEarned = 0;
+    let totalEditionsBought = 0;
+    let totalTokensBought = 0;
+    let totalArtists = new Set();
+    sortedTokens.forEach(token => {
+      totalSpent += token.price;
+      totalEarned += token.sales;
+      totalEditionsBought += token.totalEditions;
+      totalTokensBought += token.totalTokens;
+      totalArtists.add(token.domain);
+    });
+
+    // Add the totals to the end of the array
+    sortedTokens.push({ 
+      totalSpent, 
+      totalEarned, 
+      totalEditionsBought, 
+      totalTokensBought, 
+      totalArtists: totalArtists.size 
+    });
+
     return sortedTokens;
 }
-
-
-
-
 
 
 export { tratarMetadataObjkt, tratarDadosObjkt, tratarDadosLive, validateAdd, tratarDadosSell, tratarDadosBuy };
