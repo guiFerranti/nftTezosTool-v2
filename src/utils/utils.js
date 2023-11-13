@@ -105,8 +105,12 @@ function tratarDadosBuy(data) {
 
         return r;
       }, {});
-    return tokens;
+
+    const sortedTokens = Object.values(tokens).sort((a, b) => b.price - a.price);
+    
+    return sortedTokens;
 }
+
 
 
 export { tratarMetadataObjkt, tratarDadosObjkt, tratarDadosLive, validateAdd, tratarDadosSell, tratarDadosBuy };
