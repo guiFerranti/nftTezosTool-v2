@@ -78,7 +78,7 @@ function tratarDadosSell(data) {
 }
 
 function tratarDadosBuy(data) {
-    const tokens = data.reduce((r, a) => {
+    const sellers = data.reduce((r, a) => {
         if (!r[a.seller_address]) {
           r[a.seller_address] = { 
             address: a.seller_address,
@@ -87,30 +87,25 @@ function tratarDadosBuy(data) {
             totalTokens: 0,
             totalEditions: 0,
             price: 0,
-            tokens: {},
             sales: 0,
-            PL: 0 };
+            PL: 0,
+            purchasePriceAdded: false
+          };
         }
-        if (!r[a.seller_address].tokens[a.token_pk]) {
-          r[a.seller_address].tokens[a.token_pk] = { amount: 0, sales: 0, PL: 0, purchasePriceAdded: false };
-          r[a.seller_address].totalTokens += 1;        
-        }
-        r[a.seller_address].tokens[a.token_pk].amount += a.amount;
+        r[a.seller_address].totalTokens += 1;
         r[a.seller_address].totalEditions += a.amount;
         r[a.seller_address].price += a.price;
 
         if (a.token.listing_sales && a.token.listing_sales.length > 0) {
           a.token.listing_sales.forEach(sale => {
             let totalSalePrice = sale.price * sale.amount;
-            r[a.seller_address].tokens[a.token_pk].sales += totalSalePrice;
             r[a.seller_address].sales += totalSalePrice;
 
             let PL = totalSalePrice;
-            if (!r[a.seller_address].tokens[a.token_pk].purchasePriceAdded) {
+            if (!r[a.seller_address].purchasePriceAdded) {
               PL -= a.price;
-              r[a.seller_address].tokens[a.token_pk].purchasePriceAdded = true;
+              r[a.seller_address].purchasePriceAdded = true;
             }
-            r[a.seller_address].tokens[a.token_pk].PL += PL;
             r[a.seller_address].PL += PL;
           });
         }
@@ -118,24 +113,22 @@ function tratarDadosBuy(data) {
         return r;
       }, {});
 
-    const sortedTokens = Object.values(tokens).sort((a, b) => b.price - a.price);
+    const sortedSellers = Object.values(sellers).sort((a, b) => b.price - a.price);
 
-    // Calculate total spent and total earned
     let totalSpent = 0;
     let totalEarned = 0;
     let totalEditionsBought = 0;
     let totalTokensBought = 0;
     let totalArtists = new Set();
-    sortedTokens.forEach(token => {
-      totalSpent += token.price;
-      totalEarned += token.sales;
-      totalEditionsBought += token.totalEditions;
-      totalTokensBought += token.totalTokens;
-      totalArtists.add(token.domain);
+    sortedSellers.forEach(seller => {
+      totalSpent += seller.price;
+      totalEarned += seller.sales;
+      totalEditionsBought += seller.totalEditions;
+      totalTokensBought += seller.totalTokens;
+      totalArtists.add(seller.domain);
     });
 
-    // Add the totals to the end of the array
-    sortedTokens.push({ 
+    sortedSellers.push({ 
       totalSpent, 
       totalEarned, 
       totalEditionsBought, 
@@ -143,8 +136,9 @@ function tratarDadosBuy(data) {
       totalArtists: totalArtists.size 
     });
 
-    return sortedTokens;
+    return sortedSellers;
 }
+
 
 
 export { tratarMetadataObjkt, tratarDadosObjkt, tratarDadosLive, validateAdd, tratarDadosSell, tratarDadosBuy };
