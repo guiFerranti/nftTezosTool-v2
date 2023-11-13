@@ -1,5 +1,5 @@
 import { request, gql } from 'graphql-request';
-import { tratarMetadataObjkt, tratarDadosObjkt, tratarDadosLive, tratarDadosSell } from '../utils/utils.js'
+import { tratarMetadataObjkt, tratarDadosObjkt, tratarDadosLive, tratarDadosSell, tratarDadosBuy } from '../utils/utils.js'
 
 const baseUrlOBJKT = 'https://data.objkt.com/v3/graphql/';
 const baseUrlTzPro = 'https://api.tzpro.io/';
@@ -151,6 +151,22 @@ query MyQuery($address: String!, $offset: Int!) {
   }
 }
 `
+
+const bought = gql`
+query MyQuery($address: String!, $offset: Int!) {
+  listing_sale(where: {buyer_address: {_eq: $address}}, offset: $offset) {
+    price
+    token_pk
+    seller {
+      tzdomain
+      alias
+    }
+    amount
+    seller_address
+  }
+}
+`
+
 // query: graphql query
 // address: endereço para ser filtrado
 // prop: nome da property 
@@ -268,8 +284,13 @@ async function token_balance(address) {
 
 async function collecting_stats(address) {
 
-  const sold_data = await offSet(sold, address, 'listing_sale')
-  return tratarDadosSell(sold_data)
+  const sold_data = await offSet(sold, address, 'listing_sale');
+  const bought_data = await offSet(bought, address, 'listing_sale');
+  const data = {
+    bought: tratarDadosBuy(bought_data),
+    sold: tratarDadosSell(sold_data)
+  }
+  return data;
 }
 
 

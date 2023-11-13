@@ -53,7 +53,14 @@ function tratarDadosLive(data) {
 function tratarDadosSell(data) {
     const tokens = data.reduce((r, a) => {
         if (!r[a.buyer_address]) {
-          r[a.buyer_address] = { address: a.buyer_address, domain: a.buyer.tzdomain, name: a.buyer.alias , totalTokens: 0, totalEditions: 0, price: 0, tokens: {} };
+          r[a.buyer_address] = { 
+            address: a.buyer_address,
+            domain: a.buyer.tzdomain,
+            name: a.buyer.alias,
+            totalTokens: 0,
+            totalEditions: 0,
+            price: 0,
+            tokens: {} };
         }
         if (!r[a.buyer_address].tokens[a.token_pk]) {
           r[a.buyer_address].tokens[a.token_pk] = { amount: 0 };
@@ -70,7 +77,31 @@ function tratarDadosSell(data) {
     return sortedTokens;
 }
 
+function tratarDadosBuy(data) {
+    const tokens = data.reduce((r, a) => {
+        if (!r[a.seller_address]) {
+          r[a.seller_address] = { 
+            address: a.seller_address,
+            domain: a.seller.tzdomain,
+            name: a.seller.alias,
+            totalTokens: 0,
+            totalEditions: 0,
+            price: 0,
+            tokens: {} };
+        }
+        if (!r[a.seller_address].tokens[a.token_pk]) {
+          r[a.seller_address].tokens[a.token_pk] = { amount: 0 };
+          r[a.seller_address].totalTokens += 1;        
+        }
+        r[a.seller_address].tokens[a.token_pk].amount += a.amount;
+        r[a.seller_address].totalEditions += a.amount;
+        r[a.seller_address].price += a.price;
+        return r;
+      }, {});
 
+    const sortedTokens = Object.values(tokens).sort((a, b) => b.price - a.price);
 
+    return sortedTokens;
+}
 
-export { tratarMetadataObjkt, tratarDadosObjkt, tratarDadosLive, validateAdd, tratarDadosSell };
+export { tratarMetadataObjkt, tratarDadosObjkt, tratarDadosLive, validateAdd, tratarDadosSell, tratarDadosBuy };
