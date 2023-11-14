@@ -94,13 +94,13 @@ function tratarDadosBuy(data) {
       obj.artistAddress = item.seller_address;
       obj.artistName = item.seller.alias;
       obj.artistDomain = item.seller.tzdomain;
-      obj.tokensBought = 1; // cada item representa a compra de um token
+      obj.tokensBought = 1;
       obj.editionsBought = item.amount;
       obj.spent = item.price;
       obj.saleValue = item.token.listing_sales.reduce((acc, sale) => acc + sale.price, 0);
       obj.PL = obj.saleValue > 0 ? obj.saleValue - obj.spent : 0;
   
-      // atualiza as estatísticas
+
       stats.totalTokens += obj.tokensBought;
       stats.totalEditions += obj.editionsBought;
       stats.totalEditionsSold += item.token.listing_sales.length;
@@ -113,15 +113,13 @@ function tratarDadosBuy(data) {
   
       return obj;
   });
+
+  result.sort((a, b) => b.spent - a.spent);
   
-  const a = {
-     result,
-     stats: stats
+  return {
+    result,
+    stats
   }
-  return a
 }
-
-
-
 
 export { tratarMetadataObjkt, tratarDadosObjkt, tratarDadosLive, validateAdd, tratarDadosSell, tratarDadosBuy };
