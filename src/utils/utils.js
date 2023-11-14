@@ -84,7 +84,7 @@ function tratarDadosBuy(data) {
         address: a.seller_address,
         domain: a.seller.tzdomain,
         name: a.seller.alias,
-        totalTokens: 0,
+        totalTokens: new Set(),
         totalEditions: 0,
         price: 0,
         sales: 0,
@@ -94,7 +94,7 @@ function tratarDadosBuy(data) {
         editionsSold: 0
       };
     }
-    r[a.seller_address].totalTokens += 1;
+    r[a.seller_address].totalTokens.add(a.token_pk);
     r[a.seller_address].totalEditions += a.amount; 
     r[a.seller_address].price += a.price;
 
@@ -138,7 +138,7 @@ function tratarDadosBuy(data) {
     totalSpent += seller.price;
     totalEarned += seller.sales;
     totalEditionsBought += seller.totalEditions;
-    totalTokensBought += seller.totalTokens;
+    totalTokensBought += seller.totalTokens.size;
     totalArtists.add(seller.domain);
     totalRoyalties += seller.royalties;
     totalEditionsSold += seller.editionsSold;
