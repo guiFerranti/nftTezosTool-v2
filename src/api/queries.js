@@ -193,13 +193,50 @@ query MyQuery($tag: String!) {
   }
 }
 `
-const firstMintDate = gql`
+const userDataRequest = gql`
+query MyQuery ($address: String!) {
+    event(
+      where: {creator: {address: {_eq: $address}}}
+      limit: 1
+    ) {
+      id
+      marketplace_event_type
+      event_type
+      creator {
+        address
+        twitter
+        tzdomain
+        website
+        alias
+      }
+    }
+  }
+  
+`
+
+const userMintedFirst = gql`
 query MyQuery($address: String!) {
     token(
+      where: {creators: {creator_address: {_eq: $address}}}
       order_by: {timestamp: asc}
       limit: 1
-      where: {creators: {creator_address: {_eq: $address}}}
     ) {
+      token_id
+      fa_contract
+      timestamp
+    }
+  }  
+  `
+
+const userMintedLast = gql`
+query MyQuery($address: String!) {
+    token(
+      where: {creators: {creator_address: {_eq: $address}}}
+      order_by: {timestamp: desc}
+      limit: 1
+    ) {
+      token_id
+      fa_contract
       timestamp
     }
   }
@@ -214,7 +251,9 @@ const queries = {
     sold,
     bought,
     tags,
-    firstMintDate
+    userDataRequest,
+    userMintedFirst,
+    userMintedLast
 }
 
 
