@@ -84,16 +84,17 @@ function tratarDadosBuy(data) {
         address: a.seller_address,
         domain: a.seller.tzdomain,
         name: a.seller.alias,
-        totalTokens: 0,
+        totalTokens: new Set(),
         totalEditions: 0,
         price: 0,
         sales: 0,
         PL: 0,
         purchasePriceAdded: false,
-        royalties: 0
+        royalties: 0,
+        editionsSold: 0
       };
     }
-    r[a.seller_address].totalTokens += 1;
+    r[a.seller_address].totalTokens.add(a.token_pk);
     r[a.seller_address].totalEditions += a.amount; 
     r[a.seller_address].price += a.price;
 
@@ -101,6 +102,7 @@ function tratarDadosBuy(data) {
       a.token.listing_sales.forEach(sale => {
         let totalSalePrice = sale.price * sale.amount;
         r[a.seller_address].sales += totalSalePrice;
+        r[a.seller_address].editionsSold += sale.amount;
 
         let PL = totalSalePrice;
         if (!r[a.seller_address].purchasePriceAdded) {
@@ -131,13 +133,17 @@ function tratarDadosBuy(data) {
   let totalTokensBought = 0;
   let totalArtists = new Set();
   let totalRoyalties = 0;
+  let totalEditionsSold = 0;
+  let totalPL = 0;
   sortedSellers.forEach(seller => {
     totalSpent += seller.price;
     totalEarned += seller.sales;
     totalEditionsBought += seller.totalEditions;
-    totalTokensBought += seller.totalTokens;
+    totalTokensBought += seller.totalTokens.size;
     totalArtists.add(seller.domain);
     totalRoyalties += seller.royalties;
+    totalEditionsSold += seller.editionsSold;
+    totalPL += seller.PL;
   });
 
   sortedSellers.push({ 
@@ -146,13 +152,13 @@ function tratarDadosBuy(data) {
     totalEditionsBought, 
     totalTokensBought, 
     totalArtists: totalArtists.size,
-    totalRoyalties
+    totalRoyalties,
+    totalEditionsSold,
+    totalPL
   });
 
   return sortedSellers;
 }
-
-
 
 
 export { tratarMetadataObjkt, tratarDadosObjkt, tratarDadosLive, validateAdd, tratarDadosSell, tratarDadosBuy };
