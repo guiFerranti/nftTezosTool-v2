@@ -86,8 +86,11 @@ function tratarDadosBuy(data) {
       totalSpent: 0,
       totalReceived: 0,
       totalGain: 0,
-      totalRoyalties: 0
+      totalRoyalties: 0,
+      totalArtists: 0
   };
+
+  let artists = new Set();
   
   let result = data.map(item => {
       let obj = {};
@@ -110,17 +113,23 @@ function tratarDadosBuy(data) {
       }
       stats.totalRoyalties += item.token.royalties.reduce((acc, royalty) => acc + royalty.amount, 0);
   
+      artists.add(obj.artistName || obj.artistAddress);
+  
       return obj;
   });
 
+  stats.totalArtists = artists.size;
+
   result.sort((a, b) => b.spent - a.spent);
   
-  result.push({stats: stats});
+
+  result.push(stats);
   
   return {
-     bought: result
+     result
   }
 }
+
 
 
 export { tratarMetadataObjkt, tratarDadosObjkt, tratarDadosLive, validateAdd, tratarDadosSell, tratarDadosBuy };
