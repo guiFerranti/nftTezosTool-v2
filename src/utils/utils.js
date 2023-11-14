@@ -100,7 +100,6 @@ function tratarDadosBuy(data) {
       obj.saleValue = item.token.listing_sales.reduce((acc, sale) => acc + sale.price, 0);
       obj.PL = obj.saleValue > 0 ? obj.saleValue - obj.spent : 0;
   
-
       stats.totalTokens += obj.tokensBought;
       stats.totalEditions += obj.editionsBought;
       stats.totalEditionsSold += item.token.listing_sales.length;
@@ -116,10 +115,12 @@ function tratarDadosBuy(data) {
 
   result.sort((a, b) => b.spent - a.spent);
   
+  result.push({stats: stats});
+  
   return {
-    result,
-    stats
+     bought: result
   }
 }
+
 
 export { tratarMetadataObjkt, tratarDadosObjkt, tratarDadosLive, validateAdd, tratarDadosSell, tratarDadosBuy };
