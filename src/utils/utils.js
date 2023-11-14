@@ -78,86 +78,53 @@ function tratarDadosSell(data) {
 }
 
 function tratarDadosBuy(data) {
-  const sellers = data.reduce((r, a) => {
-    if (!r[a.seller_address]) {
-      r[a.seller_address] = { 
-        address: a.seller_address,
-        domain: a.seller.tzdomain,
-        name: a.seller.alias,
-        totalTokens: new Set(),
-        totalEditions: 0,
-        price: 0,
-        sales: 0,
-        PL: 0,
-        purchasePriceAdded: false,
-        royalties: 0,
-        editionsSold: 0
-      };
-    }
-    r[a.seller_address].totalTokens.add(a.token_pk);
-    r[a.seller_address].totalEditions += a.amount; 
-    r[a.seller_address].price += a.price;
-
-    if (a.token.listing_sales && a.token.listing_sales.length > 0) {
-      a.token.listing_sales.forEach(sale => {
-        let totalSalePrice = sale.price * sale.amount;
-        r[a.seller_address].sales += totalSalePrice;
-        r[a.seller_address].editionsSold += sale.amount;
-
-        let PL = totalSalePrice;
-        if (!r[a.seller_address].purchasePriceAdded) {
-          PL -= a.price;
-          r[a.seller_address].purchasePriceAdded = true;
-        }
-        r[a.seller_address].PL += PL;
-
-        if (a.token.royalties && a.token.royalties.length > 0) {
-          a.token.royalties.forEach(royalty => {
-            let royaltyPercentage = royalty.amount / 10;
-            let royaltyAmount = totalSalePrice * (royaltyPercentage / 100);
-            r[a.seller_address].royalties += royaltyAmount;
-          });
-        }
-      });
-    }
-
-    return r;
-  }, {});
-
-  const sortedSellers = Object.values(sellers).sort((a, b) => b.price - a.price);
-
-  let totalSpent = 0;
-  let totalEarned = 0;
-  let totalEditionsBought = 0;
-  let totalTokensBought = 0;
-  let totalArtists = new Set();
-  let totalRoyalties = 0;
-  let totalEditionsSold = 0;
-  let totalPL = 0;
-  sortedSellers.forEach(seller => {
-    totalSpent += seller.price;
-    totalEarned += seller.sales;
-    totalEditionsBought += seller.totalEditions;
-    totalTokensBought += seller.totalTokens.size;
-    totalArtists.add(seller.domain);
-    totalRoyalties += seller.royalties;
-    totalEditionsSold += seller.editionsSold;
-    totalPL += seller.PL;
+  
+  let stats = {
+      totalTokens: 0,
+      totalEditions: 0,
+      totalEditionsSold: 0,
+      totalSpent: 0,
+      totalReceived: 0,
+      totalGain: 0,
+      totalRoyalties: 0
+  };
+  
+  let result = data.map(item => {
+      let obj = {};
+      obj.artistAddress = item.seller_address;
+      obj.artistName = item.seller.alias;
+      obj.artistDomain = item.seller.tzdomain;
+      obj.tokensBought = 1; // cada item representa a compra de um token
+      obj.editionsBought = item.amount;
+      obj.spent = item.price;
+      obj.saleValue = item.token.listing_sales.reduce((acc, sale) => acc + sale.price, 0);
+      obj.PL = obj.saleValue > 0 ? obj.saleValue - obj.spent : 0;
+  
+      // atualiza as estatísticas
+      stats.totalTokens += obj.tokensBought;
+      stats.totalEditions += obj.editionsBought;
+      stats.totalEditionsSold += item.token.listing_sales.length;
+      stats.totalSpent += obj.spent;
+      stats.totalReceived += obj.saleValue;
+      if (obj.saleValue > 0) {
+          stats.totalGain += obj.PL;
+      }
+      stats.totalRoyalties += item.token.royalties.reduce((acc, royalty) => acc + royalty.amount, 0);
+  
+      return obj;
   });
-
-  sortedSellers.push({ 
-    totalSpent, 
-    totalEarned, 
-    totalEditionsBought, 
-    totalTokensBought, 
-    totalArtists: totalArtists.size,
-    totalRoyalties,
-    totalEditionsSold,
-    totalPL
-  });
-
-  return sortedSellers;
+  
+  console.log(result);
+  console.log(stats);
+  
+  const a = {
+     result,
+     stats
+  }
+  return a
 }
+
+
 
 
 export { tratarMetadataObjkt, tratarDadosObjkt, tratarDadosLive, validateAdd, tratarDadosSell, tratarDadosBuy };
