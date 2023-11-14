@@ -78,66 +78,80 @@ function tratarDadosSell(data) {
 }
 
 function tratarDadosBuy(data) {
-    const sellers = data.reduce((r, a) => {
-        if (!r[a.seller_address]) {
-          r[a.seller_address] = { 
-            address: a.seller_address,
-            domain: a.seller.tzdomain,
-            name: a.seller.alias,
-            totalTokens: 0,
-            totalEditions: 0,
-            price: 0,
-            sales: 0,
-            PL: 0,
-            purchasePriceAdded: false
-          };
+  const sellers = data.reduce((r, a) => {
+    if (!r[a.seller_address]) {
+      r[a.seller_address] = { 
+        address: a.seller_address,
+        domain: a.seller.tzdomain,
+        name: a.seller.alias,
+        totalTokens: 0,
+        totalEditions: 0,
+        price: 0,
+        sales: 0,
+        PL: 0,
+        purchasePriceAdded: false,
+        royalties: 0
+      };
+    }
+    r[a.seller_address].totalTokens += 1;
+    r[a.seller_address].totalEditions += a.amount; 
+    r[a.seller_address].price += a.price;
+
+    if (a.token.listing_sales && a.token.listing_sales.length > 0) {
+      a.token.listing_sales.forEach(sale => {
+        let totalSalePrice = sale.price * sale.amount;
+        r[a.seller_address].sales += totalSalePrice;
+
+        let PL = totalSalePrice;
+        if (!r[a.seller_address].purchasePriceAdded) {
+          PL -= a.price;
+          r[a.seller_address].purchasePriceAdded = true;
         }
-        r[a.seller_address].totalTokens += 1;
-        r[a.seller_address].totalEditions += a.amount;
-        r[a.seller_address].price += a.price;
+        r[a.seller_address].PL += PL;
 
-        if (a.token.listing_sales && a.token.listing_sales.length > 0) {
-          a.token.listing_sales.forEach(sale => {
-            let totalSalePrice = sale.price * sale.amount;
-            r[a.seller_address].sales += totalSalePrice;
-
-            let PL = totalSalePrice;
-            if (!r[a.seller_address].purchasePriceAdded) {
-              PL -= a.price;
-              r[a.seller_address].purchasePriceAdded = true;
-            }
-            r[a.seller_address].PL += PL;
+        // Calculate royalties
+        if (a.token.royalties && a.token.royalties.length > 0) {
+          a.token.royalties.forEach(royalty => {
+            let royaltyPercentage = royalty.amount / 10;
+            let royaltyAmount = totalSalePrice * (royaltyPercentage / 100);
+            r[a.seller_address].royalties += royaltyAmount;
           });
         }
+      });
+    }
 
-        return r;
-      }, {});
+    return r;
+  }, {});
 
-    const sortedSellers = Object.values(sellers).sort((a, b) => b.price - a.price);
+  const sortedSellers = Object.values(sellers).sort((a, b) => b.price - a.price);
 
-    let totalSpent = 0;
-    let totalEarned = 0;
-    let totalEditionsBought = 0;
-    let totalTokensBought = 0;
-    let totalArtists = new Set();
-    sortedSellers.forEach(seller => {
-      totalSpent += seller.price;
-      totalEarned += seller.sales;
-      totalEditionsBought += seller.totalEditions;
-      totalTokensBought += seller.totalTokens;
-      totalArtists.add(seller.domain);
-    });
+  let totalSpent = 0;
+  let totalEarned = 0;
+  let totalEditionsBought = 0;
+  let totalTokensBought = 0;
+  let totalArtists = new Set();
+  let totalRoyalties = 0;
+  sortedSellers.forEach(seller => {
+    totalSpent += seller.price;
+    totalEarned += seller.sales;
+    totalEditionsBought += seller.totalEditions;
+    totalTokensBought += seller.totalTokens;
+    totalArtists.add(seller.domain);
+    totalRoyalties += seller.royalties;
+  });
 
-    sortedSellers.push({ 
-      totalSpent, 
-      totalEarned, 
-      totalEditionsBought, 
-      totalTokensBought, 
-      totalArtists: totalArtists.size 
-    });
+  sortedSellers.push({ 
+    totalSpent, 
+    totalEarned, 
+    totalEditionsBought, 
+    totalTokensBought, 
+    totalArtists: totalArtists.size,
+    totalRoyalties
+  });
 
-    return sortedSellers;
+  return sortedSellers;
 }
+
 
 
 
