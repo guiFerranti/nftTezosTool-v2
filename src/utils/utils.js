@@ -114,12 +114,9 @@ function tratarDadosBuy(data) {
       return obj;
   });
   
-  console.log(result);
-  console.log(stats);
-  
   const a = {
      result,
-     stats
+     stats: stats
   }
   return a
 }
