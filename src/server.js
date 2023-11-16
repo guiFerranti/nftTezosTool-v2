@@ -24,7 +24,7 @@ app.use('/sales', salesRoutes);
 app.use('/live_feed', liveFeedRoutes);
 app.use('/following_table', followingTableRoutes);
 app.use('/collecting_stats', CollectingSalesRoutes);
-app.use('/filter_by_tag', filterByTagRoutes);
+app.use('/filter_by_tags', filterByTagRoutes);
  //v1 tools
 app.use('/mint', mintRoutes);
 app.use('/token_balance', tokenBalanceRoutes);

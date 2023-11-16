@@ -171,28 +171,48 @@ query MyQuery($address: String!, $offset: Int!) {
 }
 `
 
-const tags = gql`
-query MyQuery($tag: String!) {
-  tag(where: {name: {_eq: $tag}, tokens: {}}) {
-    tokens {
+function tags(params) {
+  const tags = JSON.stringify(params);
+  // ${tags}
+  const request = gql`
+  query MyQuery {
+    listing_active(
+      where: {token: {tags: {tag: {name: {_in: ${tags}}}}}}
+      order_by: {timestamp: desc}
+    ) {
+      id
+      timestamp
+      amount
+      amount_left
       token {
-        name
-        display_uri
-        artifact_uri
-        mime
-        token_id
-        fa_contract
-        listings {
+        listings_active {
           price
         }
+        name
+        mime
+        display_uri
+        artifact_uri
+        fa_contract
+        token_id
         creators {
           creator_address
         }
+        tags(where: {tag: {name: {_in: ${tags}}}}) {
+          tag {
+            name
+          }
+        }
+      }
+      marketplace {
+        name
       }
     }
-  }
+  }  
+  `
+  return request;
 }
-`
+
+
 const userDataRequest = gql`
 query MyQuery ($address: String!) {
     event(

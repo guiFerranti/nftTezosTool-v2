@@ -79,57 +79,76 @@ function tratarDadosSell(data) {
 
 function tratarDadosBuy(data) {
   
-  let stats = {
-      totalTokens: 0,
-      totalEditions: 0,
-      totalEditionsSold: 0,
-      totalSpent: 0,
-      totalReceived: 0,
-      totalGain: 0,
-      totalRoyalties: 0,
-      totalArtists: 0
-  };
-
-  let artists = new Set();
+    let stats = {
+        totalTokens: 0,
+        totalEditions: 0,
+        totalEditionsSold: 0,
+        totalSpent: 0,
+        totalReceived: 0,
+        totalGain: 0,
+        totalRoyalties: 0,
+        totalArtists: 0
+    };
   
-  let result = data.map(item => {
-      let obj = {};
-      obj.artistAddress = item.seller_address;
-      obj.artistName = item.seller.alias;
-      obj.artistDomain = item.seller.tzdomain;
-      obj.tokensBought = 1;
-      obj.editionsBought = item.amount;
-      obj.spent = item.price;
-      obj.saleValue = item.token.listing_sales.reduce((acc, sale) => acc + sale.price, 0);
-      obj.PL = obj.saleValue > 0 ? obj.saleValue - obj.spent : 0;
+    let artists = new Set();
+    let tokens = {};
+    let artistData = {};
   
-      stats.totalTokens += obj.tokensBought;
-      stats.totalEditions += obj.editionsBought;
-      stats.totalEditionsSold += item.token.listing_sales.length;
-      stats.totalSpent += obj.spent;
-      stats.totalReceived += obj.saleValue;
-      if (obj.saleValue > 0) {
-          stats.totalGain += obj.PL;
-      }
-      stats.totalRoyalties += item.token.royalties.reduce((acc, royalty) => acc + royalty.amount, 0);
+    data.forEach(item => {
+        let obj = artistData[item.seller_address] || {
+            artistAddress: item.seller_address,
+            artistName: item.seller.alias,
+            artistDomain: item.seller.tzdomain,
+            tokensBought: 0,
+            editionsBought: 0,
+            spent: 0,
+            saleValue: 0,
+            PL: 0
+        };
+        
+        obj.tokensBought += 1;
+        obj.editionsBought += item.amount;
+        obj.spent += item.price;
+        obj.saleValue += item.token.listing_sales.reduce((acc, sale) => acc + sale.price, 0);
+        obj.PL += obj.saleValue > 0 ? obj.saleValue - obj.spent : 0;
+    
+        stats.totalTokens += 1;
+        stats.totalEditions += item.amount;
+        stats.totalEditionsSold += item.token.listing_sales.length;
+        stats.totalSpent += item.price;
+        stats.totalReceived += obj.saleValue;
+        if (obj.saleValue > 0) {
+            stats.totalGain += obj.PL;
+        }
+        
+        let royalties = item.token.royalties.reduce((acc, royalty) => acc + royalty.amount, 0);
+        obj.royalties = obj.saleValue * royalties / 10 * 1 / 100;
+        stats.totalRoyalties += obj.royalties;
+    
+        artists.add(obj.artistName || obj.artistAddress);
+    
+        if (tokens[item.token_pk]) {
+            tokens[item.token_pk] += item.amount;
+        } else {
+            tokens[item.token_pk] = item.amount;
+        }
   
-      artists.add(obj.artistName || obj.artistAddress);
+        artistData[item.seller_address] = obj;
+    });
   
-      return obj;
-  });
-
-  stats.totalArtists = artists.size;
-
-  result.sort((a, b) => b.spent - a.spent);
+    stats.totalArtists = artists.size;
+    stats.totalTokens = Object.keys(tokens).length;
+    stats.totalEditions = Object.values(tokens).reduce((a, b) => a + b, 0);
   
-
-  result.push(stats);
-  
-  return {
-     result
+    let result = Object.values(artistData);
+    result.sort((a, b) => b.spent - a.spent);
+     
+    result.push(stats);
+    
+    return {
+       result
+    }
   }
-}
-
-
+  
 
 export { tratarMetadataObjkt, tratarDadosObjkt, tratarDadosLive, validateAdd, tratarDadosSell, tratarDadosBuy };

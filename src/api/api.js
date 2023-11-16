@@ -1,4 +1,4 @@
-import { request, gql } from 'graphql-request';
+import { request } from 'graphql-request';
 import { tratarMetadataObjkt, tratarDadosObjkt, tratarDadosLive, tratarDadosSell, tratarDadosBuy } from '../utils/utils.js';
 import queries from './queries.js';
 
@@ -127,17 +127,23 @@ async function collecting_stats(address) {
 }
 
 async function filter_by_tags(tag){
-  const variables = {
-    tag: tag
-  }
+  const tags = tag.split(",")
   const items_filtered = []
-  const response = await request(baseUrlOBJKT, queries.tags, variables);
 
-  for (const item of response.tag[0].tokens) {
+  const response = await request(baseUrlOBJKT, queries.tags(tags));
   
+  for (const item of response.listing_active) {
+
     const metadata = tratarMetadataObjkt(item.token);
     const creator = item.token.creators[0]['creator_address']
+    const min_price = Math.min(...item.token.listings_active.map(listing => listing.price));
+    const item_tag = item.token.tags[0].tag['name'];
+    const marketplace = item.marketplace['name']
+
     metadata['creator'] = creator;
+    metadata['min_price'] = min_price;
+    metadata['tag'] = item_tag;
+    metadata['marketplace'] = marketplace;
 
     items_filtered.push(metadata);
   }
