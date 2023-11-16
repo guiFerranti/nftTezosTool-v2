@@ -148,7 +148,25 @@ function tratarDadosBuy(data) {
     return {
        result
     }
-  }
+}
+
+function tratarPrices(item) {
+
+    const metadata = tratarMetadataObjkt(item.token);
+    const creator = item.token.creators[0]['creator_address'];
+    const min_price = Math.min(...item.token.listings_active.map(listing => listing.price));
+    const item_tag = item.token.tags[0]?.tag?.name || null;
+    const marketplace = item.marketplace['name'];
+    const supply = item.token['supply'];
+
+    metadata['creator'] = creator;
+    metadata['min_price'] = min_price;
+    metadata['tag'] = item_tag;
+    metadata['marketplace'] = marketplace;
+    metadata['supply'] = supply;
+
+    return metadata;
+}
   
 
-export { tratarMetadataObjkt, tratarDadosObjkt, tratarDadosLive, validateAdd, tratarDadosSell, tratarDadosBuy };
+export { tratarMetadataObjkt, tratarDadosObjkt, tratarDadosLive, validateAdd, tratarDadosSell, tratarDadosBuy, tratarPrices };

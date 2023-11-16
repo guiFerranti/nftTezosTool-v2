@@ -171,48 +171,6 @@ query MyQuery($address: String!, $offset: Int!) {
 }
 `
 
-function tags(params) {
-  const tags = JSON.stringify(params);
-  // ${tags}
-  const request = gql`
-  query MyQuery {
-    listing_active(
-      where: {token: {tags: {tag: {name: {_in: ${tags}}}}}}
-      order_by: {timestamp: desc}
-    ) {
-      id
-      timestamp
-      amount
-      amount_left
-      token {
-        listings_active {
-          price
-        }
-        name
-        mime
-        display_uri
-        artifact_uri
-        fa_contract
-        token_id
-        creators {
-          creator_address
-        }
-        tags(where: {tag: {name: {_in: ${tags}}}}) {
-          tag {
-            name
-          }
-        }
-      }
-      marketplace {
-        name
-      }
-    }
-  }  
-  `
-  return request;
-}
-
-
 const userDataRequest = gql`
 query MyQuery ($address: String!) {
     event(
@@ -262,6 +220,90 @@ query MyQuery($address: String!) {
   }
   `
 
+function tags(params) {
+  const tags = JSON.stringify(params);
+  // ${tags}
+  const request = gql`
+  query MyQuery {
+    listing(
+    order_by: {timestamp: desc}
+    where: {amount_left: {_gt: 1}, status: {_eq: "active"}, token: {tags: {tag: {name: {_in: ${tags}}}}}}
+  ) {
+      id
+      timestamp
+      amount
+      amount_left
+      token {
+        listings_active {
+          price
+        }
+        name
+        mime
+        display_uri
+        artifact_uri
+        fa_contract
+        token_id
+        supply
+        creators {
+          creator_address
+        }
+        tags(where: {tag: {name: {_in: ${tags}}}}) {
+          tag {
+            name
+          }
+        }
+      }
+      marketplace {
+        name
+      }
+    }
+  }
+  `
+  return request;
+}
+
+function edition(params) {
+  const param = params === 'single' ? 'eq' : params === 'multi' ? 'gt' : null;
+
+  if (param === null) {
+    return "Invalid param"
+  }
+
+const editions = gql`
+query MyQuery {
+  listing(
+    order_by: {timestamp: desc}
+    where: {amount_left: {_gt: 1}, status: {_eq: "active"}, token: {supply: {_${param}: "1"}}}
+  ) {
+    token {
+      listings_active {
+        price
+      }
+      name
+      mime
+      display_uri
+      artifact_uri
+      fa_contract
+      token_id
+      supply
+      creators {
+        creator_address
+      }
+      tags {
+        tag {
+          name
+        }
+      }
+    }
+    marketplace {
+      name
+    }
+  }
+}
+  `
+  return editions;
+}
+
 const queries = {
     objkt,
     live_feed_mints,
@@ -270,10 +312,11 @@ const queries = {
     tokens_bal,
     sold,
     bought,
-    tags,
     userDataRequest,
     userMintedFirst,
-    userMintedLast
+    userMintedLast,
+    tags,
+    edition
 }
 
 

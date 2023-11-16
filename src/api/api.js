@@ -1,5 +1,5 @@
 import { request } from 'graphql-request';
-import { tratarMetadataObjkt, tratarDadosObjkt, tratarDadosLive, tratarDadosSell, tratarDadosBuy } from '../utils/utils.js';
+import { tratarMetadataObjkt, tratarDadosObjkt, tratarDadosLive, tratarDadosSell, tratarDadosBuy, tratarPrices } from '../utils/utils.js';
 import queries from './queries.js';
 
 const baseUrlOBJKT = 'https://data.objkt.com/v3/graphql/';
@@ -132,18 +132,9 @@ async function filter_by_tags(tag){
 
   const response = await request(baseUrlOBJKT, queries.tags(tags));
   
-  for (const item of response.listing_active) {
+  for (const item of response.listing) {
 
-    const metadata = tratarMetadataObjkt(item.token);
-    const creator = item.token.creators[0]['creator_address']
-    const min_price = Math.min(...item.token.listings_active.map(listing => listing.price));
-    const item_tag = item.token.tags[0].tag['name'];
-    const marketplace = item.marketplace['name']
-
-    metadata['creator'] = creator;
-    metadata['min_price'] = min_price;
-    metadata['tag'] = item_tag;
-    metadata['marketplace'] = marketplace;
+    const metadata = tratarPrices(item);
 
     items_filtered.push(metadata);
   }
@@ -151,4 +142,18 @@ async function filter_by_tags(tag){
   return items_filtered;
 }
 
-export { sales, liveFeed, minted, token_balance, collecting_stats, filter_by_tags };
+async function filter_by_edition(params) {
+  const response = await request(baseUrlOBJKT, queries.edition(params));
+  const items = [];
+
+  for (const item of response.listing) {
+
+    const metadata = tratarPrices(item);
+
+    items.push(metadata);
+  }
+
+  return items;
+}
+
+export { sales, liveFeed, minted, token_balance, collecting_stats, filter_by_tags, filter_by_edition };
