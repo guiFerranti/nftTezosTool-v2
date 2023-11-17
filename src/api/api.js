@@ -1,5 +1,5 @@
 import { request } from 'graphql-request';
-import { tratarMetadataObjkt, tratarDadosObjkt, tratarDadosLive, tratarDadosSell, tratarDadosBuy, tratarPrices } from '../utils/utils.js';
+import { tratarMetadataObjkt, tratarDadosObjkt, tratarDadosLive, tratarDadosSell, tratarDadosBuy, tratarPrices, user_infos } from '../utils/utils.js';
 import queries from './queries.js';
 
 const baseUrlOBJKT = 'https://data.objkt.com/v3/graphql/';
@@ -156,4 +156,13 @@ async function filter_by_edition(params) {
   return items;
 }
 
-export { sales, liveFeed, minted, token_balance, collecting_stats, filter_by_tags, filter_by_edition };
+async function user_info(address) {
+  const variables = {
+    address: address
+  }
+  const response = await request(baseUrlOBJKT, queries.userInfo, variables);
+  const infos = user_infos(response.event[0]);
+  return infos;
+}
+
+export { sales, liveFeed, minted, token_balance, collecting_stats, filter_by_tags, filter_by_edition, user_info };

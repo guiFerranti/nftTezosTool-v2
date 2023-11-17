@@ -167,6 +167,20 @@ function tratarPrices(item) {
 
     return metadata;
 }
+
+function user_infos(data) {
+    const creator = data.creator;
+    const infos = {
+        first_mint: data.timestamp,
+        address: creator.address,
+        name: creator.alias,
+        domain: creator.tzdomain,
+        twitter: creator.twitter,
+        website: creator.website,
+        description: creator.description
+    }
+    return infos;
+}
   
 
-export { tratarMetadataObjkt, tratarDadosObjkt, tratarDadosLive, validateAdd, tratarDadosSell, tratarDadosBuy, tratarPrices };
+export { tratarMetadataObjkt, tratarDadosObjkt, tratarDadosLive, validateAdd, tratarDadosSell, tratarDadosBuy, tratarPrices, user_infos };

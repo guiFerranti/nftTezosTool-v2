@@ -304,6 +304,26 @@ query MyQuery {
   return editions;
 }
 
+const userInfo = gql`
+query MyQuery($address: String!) {
+  event(
+    where: {creator_address: {_eq: $address}, event_type: {_eq: "mint"}}
+    order_by: {timestamp: asc}
+    limit: 1
+  ) {
+    timestamp
+    creator {
+      address
+      alias
+      tzdomain
+      twitter
+      website
+      description
+    }
+  }
+}
+`
+
 const queries = {
     objkt,
     live_feed_mints,
@@ -316,7 +336,8 @@ const queries = {
     userMintedFirst,
     userMintedLast,
     tags,
-    edition
+    edition,
+    userInfo
 }
 
 
