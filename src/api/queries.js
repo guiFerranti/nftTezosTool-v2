@@ -311,6 +311,7 @@ query MyQuery($address: String!) {
     order_by: {timestamp: asc}
     limit: 1
   ) {
+    event_type
     timestamp
     creator {
       address
@@ -319,6 +320,22 @@ query MyQuery($address: String!) {
       twitter
       website
       description
+      listings_sold(distinct_on: buyer_address) {
+        buyer_address
+      }
+    }
+  }
+}
+
+`
+
+const userInfoSales = gql`
+query MyQuery($address: String!, $offset: Int!) {
+  event(where: {creator: {address: {_eq: $address}}}) {
+    creator {
+      listings_sold(distinct_on: buyer_address, offset: $offset) {
+        id
+      }
     }
   }
 }
@@ -337,7 +354,8 @@ const queries = {
     userMintedLast,
     tags,
     edition,
-    userInfo
+    userInfo,
+    userInfoSales
 }
 
 

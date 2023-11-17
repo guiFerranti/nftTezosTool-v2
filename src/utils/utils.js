@@ -1,5 +1,5 @@
 import { validateAddress } from '@taquito/utils';
-
+import queries from '../api/queries.js'
 
 function validateAdd(address) {
     const validation = validateAddress(address);
@@ -168,7 +168,7 @@ function tratarPrices(item) {
     return metadata;
 }
 
-function user_infos(data) {
+function user_infos(data, collectors) {
     const creator = data.creator;
     const infos = {
         first_mint: data.timestamp,
@@ -177,7 +177,8 @@ function user_infos(data) {
         domain: creator.tzdomain,
         twitter: creator.twitter,
         website: creator.website,
-        description: creator.description
+        description: creator.description,
+        collectors: collectors
     }
     return infos;
 }

@@ -161,8 +161,21 @@ async function user_info(address) {
     address: address
   }
   const response = await request(baseUrlOBJKT, queries.userInfo, variables);
-  const infos = user_infos(response.event[0]);
+  let listings_solds = response.event[0].creator.listings_sold.length;
+  let offset = 500;
+  while (listings_solds === offset) {
+    const variables = {
+        address: address,
+        offset: offset
+    }
+    const response = await request(baseUrlOBJKT, queries.userInfoSales, variables);
+    offset += 500;
+    listings_solds += response.event[0].creator.listings_sold.length;
+  }
+
+  const infos = user_infos(response.event[0], listings_solds);
   return infos;
 }
+
 
 export { sales, liveFeed, minted, token_balance, collecting_stats, filter_by_tags, filter_by_edition, user_info };
