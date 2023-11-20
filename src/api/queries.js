@@ -341,6 +341,50 @@ query MyQuery($address: String!, $offset: Int!) {
 }
 `
 
+const bidWar = gql`
+query MyQuery {
+  english_auction_bid(
+    order_by: {timestamp: desc}
+    where: {auction: {status: {_eq: "active"}}}
+  ) {
+    bidder_address
+    auction {
+      end_time
+      price_increment
+      token {
+        name
+        mime
+        display_uri
+        artifact_uri
+        fa_contract
+        token_id
+        supply
+        creators {
+          creator_address
+        }
+        listings_active {
+          price
+        }
+        tags {
+          tag {
+            name
+          }
+        }
+      }
+      bids {
+        amount
+        timestamp
+      }
+      status
+      hash
+      marketplace {
+        name
+      }
+    }
+  }
+}
+`
+
 const queries = {
     objkt,
     live_feed_mints,
@@ -355,7 +399,8 @@ const queries = {
     tags,
     edition,
     userInfo,
-    userInfoSales
+    userInfoSales,
+    bidWar
 }
 
 

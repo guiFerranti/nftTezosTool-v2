@@ -1,5 +1,5 @@
 import { request } from 'graphql-request';
-import { tratarMetadataObjkt, tratarDadosObjkt, tratarDadosLive, tratarDadosSell, tratarDadosBuy, tratarPrices, user_infos } from '../utils/utils.js';
+import { tratarMetadataObjkt, tratarDadosObjkt, tratarDadosLive, tratarDadosSell, tratarDadosBuy, tratarPrices, user_infos, auction_info } from '../utils/utils.js';
 import queries from './queries.js';
 
 const baseUrlOBJKT = 'https://data.objkt.com/v3/graphql/';
@@ -164,18 +164,41 @@ async function user_info(address) {
   let listings_solds = response.event[0].creator.listings_sold.length;
   let offset = 500;
   while (listings_solds === offset) {
-    const variables = {
-        address: address,
-        offset: offset
+    try {
+      const variables = {
+          address: address,
+          offset: offset
+      }
+      const response = await request(baseUrlOBJKT, queries.userInfoSales, variables);
+      offset += 500;
+      listings_solds += response.event[0].creator.listings_sold.length;
+    } catch (e) {
+      //leave the loop
+      listings_solds += 1;
     }
-    const response = await request(baseUrlOBJKT, queries.userInfoSales, variables);
-    offset += 500;
-    listings_solds += response.event[0].creator.listings_sold.length;
   }
 
   const infos = user_infos(response.event[0], listings_solds);
   return infos;
 }
 
+async function bid_war() {
+  const tokens = []
+  const response = await request(baseUrlOBJKT, queries.bidWar);
+  
+  for (const item of response.english_auction_bid){
+    console.log(item.auction.token)
+    const metadata = tratarPrices(item.auction);
+    const auction_bid = auction_info(item.auction);
+    const auction = {
+      metadata: metadata,
+      auction_info: auction_bid
+    }
+    console.log(item);
+    tokens.push(auction);
+  }
+  return tokens;
+}
 
-export { sales, liveFeed, minted, token_balance, collecting_stats, filter_by_tags, filter_by_edition, user_info };
+
+export { sales, liveFeed, minted, token_balance, collecting_stats, filter_by_tags, filter_by_edition, user_info, bid_war };

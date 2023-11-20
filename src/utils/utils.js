@@ -182,6 +182,18 @@ function user_infos(data, collectors) {
     }
     return infos;
 }
+
+function auction_info(item) {
+    const auction_info = {
+        end_time: item.end_time,
+        min_increment: item.price_increment,
+        total_bids: item.bids.length,
+        highest_bid: item.bids[item.bids.length - 1].amount,
+        status: item.status,
+        hash: item.hash,
+    }
+    return auction_info;
+}
   
 
-export { tratarMetadataObjkt, tratarDadosObjkt, tratarDadosLive, validateAdd, tratarDadosSell, tratarDadosBuy, tratarPrices, user_infos };
+export { tratarMetadataObjkt, tratarDadosObjkt, tratarDadosLive, validateAdd, tratarDadosSell, tratarDadosBuy, tratarPrices, user_infos, auction_info };

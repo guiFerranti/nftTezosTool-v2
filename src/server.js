@@ -9,6 +9,8 @@ import tokenBalanceRoutes from './routes/tokenBalanceRoutes.js';
 import filterByTagRoutes from './routes/filterByTagRoutes.js';
 import filterByEditionRoutes from './routes/filterByEditionRoutes.js';
 import userInfoRoutes from './routes/userInfoRoutes.js'
+import bidWarRoutes from './routes/bidWarRoutes.js'
+
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -29,6 +31,7 @@ app.use('/collecting_stats', collectingSalesRoutes);
 app.use('/filter_by_tags', filterByTagRoutes);
 app.use('/filter_by_edition', filterByEditionRoutes);
 app.use('/user_info', userInfoRoutes);
+app.use('/bid_war', bidWarRoutes);
  //v1 tools
 app.use('/mint', mintRoutes);
 app.use('/token_balance', tokenBalanceRoutes);
