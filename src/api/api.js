@@ -183,22 +183,33 @@ async function user_info(address) {
 }
 
 async function bid_war() {
-  const tokens = []
   const response = await request(baseUrlOBJKT, queries.bidWar);
   
+  const MappedBy = new Map();
+
   for (const item of response.english_auction_bid){
-    console.log(item.auction.token)
+    
     const metadata = tratarPrices(item.auction);
     const auction_bid = auction_info(item.auction);
     const auction = {
       metadata: metadata,
       auction_info: auction_bid
     }
-    console.log(item);
-    tokens.push(auction);
+
+    const key = item.auction.hash;
+
+    if (!MappedBy.has(key)) {
+      MappedBy.set(key, auction);
+    }
   }
+
+  const tokens = Array.from(MappedBy.values());
+
   return tokens;
 }
+
+
+
 
 
 export { sales, liveFeed, minted, token_balance, collecting_stats, filter_by_tags, filter_by_edition, user_info, bid_war };
