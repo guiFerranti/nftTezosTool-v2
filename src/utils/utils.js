@@ -194,6 +194,34 @@ function auction_info(item) {
     }
     return auction_info;
 }
-  
 
-export { tratarMetadataObjkt, tratarDadosObjkt, tratarDadosLive, validateAdd, tratarDadosSell, tratarDadosBuy, tratarPrices, user_infos, auction_info };
+function tratarMetadataTezTok(data) {
+    let creator_profile;
+    if (data.creator_profile) {
+        creator_profile = {
+            creator: data.artist_profile.account,
+            alias: data.artist_profile.alias,
+            twitter: data.artist_profile.twitter,
+            domain: data.artist_profile.domain_name,
+            website: data.artist_profile.website
+        }
+    }
+    const token = {
+        supply: data.editions,
+        display_uri: data.display_uri,
+        artifact_uri: data.artifact_uri,
+        price: data.price,
+        name: data.name,
+        creator: data.artist_address,
+        contract: data.fa2_address,
+        token_id: data.token_id,
+        mime: data.mime_type,
+        diff_highest_price: data.current_price_to_highest_sales_price_diff, 
+        diff_last_price:  data.current_price_to_last_sales_price_diff,
+        creator_profile,
+        }
+      
+    return token;
+}
+
+export { tratarMetadataObjkt, tratarDadosObjkt, tratarDadosLive, validateAdd, tratarDadosSell, tratarDadosBuy, tratarPrices, user_infos, auction_info, tratarMetadataTezTok };

@@ -385,6 +385,85 @@ query MyQuery {
 }
 `
 
+const primaryMarket = gql`
+query LatestEvents {
+  tokens(where: {sales_count: {_eq: "0"}, price: {_is_null: false}}, order_by: {minted_at: desc_nulls_last}, limit: 500) {
+    editions
+    sales_count
+    minted_at
+    display_uri
+    artifact_uri
+    artist_address
+    price
+    name
+    fa2_address
+    token_id
+    artist_profile {
+      account
+      alias
+      twitter
+      domain_name
+      website
+    }
+  }
+}
+`
+const secondaryMarket = gql`
+query LatestEvents {
+  tokens(where: {sales_count: {_gt: "0"}, price: {_is_null: false}}, order_by: {minted_at: desc_nulls_last}, limit: 500) {
+    editions
+    sales_count
+    minted_at
+    display_uri
+    artifact_uri
+    artist_address
+    price
+    name
+    fa2_address
+    token_id
+    artist_profile {
+      account
+      alias
+      twitter
+      domain_name
+      website
+    }
+  }
+}
+`
+
+const tradeOpportunities = gql`
+query LatestEvents {
+  tokens(where: {price: {_is_null: false}, current_price_to_highest_sales_price_pct: {_lt: "0"}}, order_by: {minted_at: desc_nulls_last}, limit: 500) {
+    editions
+    sales_count
+    minted_at
+    display_uri
+    artifact_uri
+    artist_address
+    price
+    name
+    fa2_address
+    token_id
+    current_price_to_highest_sales_price_diff
+    current_price_to_highest_sales_price_pct
+    current_price_to_last_sales_price_diff
+    current_price_to_last_sales_price_pct
+    last_sale_at
+    last_sales_price
+    mime_type
+    artist_profile {
+      account
+      alias
+      twitter
+      domain_name
+      website
+    }
+
+  }
+}
+`
+
 const queries = {
     objkt,
     live_feed_mints,
@@ -400,7 +479,9 @@ const queries = {
     edition,
     userInfo,
     userInfoSales,
-    bidWar
+    bidWar,
+    primaryMarket,
+    tradeOpportunities
 }
 
 
