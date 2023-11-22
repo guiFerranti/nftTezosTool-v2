@@ -197,7 +197,8 @@ function auction_info(item) {
 
 function tratarMetadataTezTok(data) {
     let creator_profile;
-    if (data.creator_profile) {
+    if (data.artist_profile) {
+        console.log("entro")
         creator_profile = {
             creator: data.artist_profile.account,
             alias: data.artist_profile.alias,
@@ -217,7 +218,7 @@ function tratarMetadataTezTok(data) {
         token_id: data.token_id,
         mime: data.mime_type,
         diff_highest_price: data.current_price_to_highest_sales_price_diff, 
-        diff_last_price:  data.current_price_to_last_sales_price_diff,
+        diff_last_price: data.current_price_to_last_sales_price_diff,
         creator_profile,
         }
       
