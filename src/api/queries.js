@@ -385,49 +385,34 @@ query MyQuery {
 }
 `
 
-const primaryMarket = gql`
-query LatestEvents {
-  tokens(where: {sales_count: {_eq: "0"}, price: {_is_null: false}}, order_by: {minted_at: desc_nulls_last}, limit: 500) {
-    editions
-    sales_count
-    minted_at
-    display_uri
-    artifact_uri
-    artist_address
-    price
-    name
-    fa2_address
-    token_id
-    artist_profile {
-      account
-      alias
-      twitter
-      domain_name
-      website
+const PSMarket = gql`
+query MyQuery {
+  listing(order_by: {timestamp: desc}, where: {status: {_eq: "active"}}) {
+    status
+    token {
+      listings_active {
+        price
+      }
+      name
+      mime
+      display_uri
+      artifact_uri
+      fa_contract
+      token_id
+      supply
+      creators {
+        creator_address
+      }
+      tags {
+        tag {
+          name
+        }
+      }
     }
-  }
-}
-`
-const secondaryMarket = gql`
-query LatestEvents {
-  tokens(where: {sales_count: {_gt: "0"}, price: {_is_null: false}}, order_by: {minted_at: desc_nulls_last}, limit: 500) {
-    editions
-    sales_count
-    minted_at
-    display_uri
-    artifact_uri
-    artist_address
-    price
-    name
-    fa2_address
-    token_id
-    artist_profile {
-      account
-      alias
-      twitter
-      domain_name
-      website
+    marketplace {
+      name
     }
+    seller_address
   }
 }
 `
@@ -480,7 +465,7 @@ const queries = {
     userInfo,
     userInfoSales,
     bidWar,
-    primaryMarket,
+    PSMarket,
     tradeOpportunities
 }
 

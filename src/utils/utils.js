@@ -1,5 +1,4 @@
 import { validateAddress } from '@taquito/utils';
-import queries from '../api/queries.js'
 
 function validateAdd(address) {
     const validation = validateAddress(address);
@@ -198,7 +197,6 @@ function auction_info(item) {
 function tratarMetadataTezTok(data) {
     let creator_profile;
     if (data.artist_profile) {
-        console.log("entro")
         creator_profile = {
             creator: data.artist_profile.account,
             alias: data.artist_profile.alias,
@@ -225,4 +223,23 @@ function tratarMetadataTezTok(data) {
     return token;
 }
 
-export { tratarMetadataObjkt, tratarDadosObjkt, tratarDadosLive, validateAdd, tratarDadosSell, tratarDadosBuy, tratarPrices, user_infos, auction_info, tratarMetadataTezTok };
+function psMarket(data) {
+    const primary = []
+    const secondary = []
+    for (const item of data) {
+        if (item.seller_address === item.token.creators[0].creator_address){
+            const token = tratarPrices(item);
+            primary.push(token);
+        } else {
+            const token = tratarPrices(item);
+            secondary.push(token);
+        }
+    }
+    const market = {
+        primary: primary,
+        secondary: secondary
+    }
+    return market;
+}
+
+export { tratarMetadataObjkt, tratarDadosObjkt, tratarDadosLive, validateAdd, tratarDadosSell, tratarDadosBuy, tratarPrices, user_infos, auction_info, tratarMetadataTezTok, psMarket };

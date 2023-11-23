@@ -1,5 +1,5 @@
 import { request } from 'graphql-request';
-import { tratarMetadataObjkt, tratarDadosObjkt, tratarDadosLive, tratarDadosSell, tratarDadosBuy, tratarPrices, user_infos, auction_info, tratarMetadataTezTok } from '../utils/utils.js';
+import { tratarMetadataObjkt, tratarDadosObjkt, tratarDadosLive, tratarDadosSell, tratarDadosBuy, tratarPrices, user_infos, auction_info, tratarMetadataTezTok, psMarket } from '../utils/utils.js';
 import queries from './queries.js';
 
 const baseUrlOBJKT = 'https://data.objkt.com/v3/graphql/';
@@ -214,13 +214,20 @@ async function trade_opportunities() {
   const response = await request(baseUrlTezTok, queries.tradeOpportunities);
 
   for (const item of response.tokens) {
-    const token = await tratarMetadataTezTok(item);
+    const token = tratarMetadataTezTok(item);
     tokens.push(token);
 
   }
   return tokens;
 }
 
+async function ps_market() {
+  const response = await request(baseUrlOBJKT, queries.PSMarket);
+  const tokens = psMarket(response.listing);
+
+  return tokens;
+}
 
 
-export { sales, liveFeed, minted, token_balance, collecting_stats, filter_by_tags, filter_by_edition, user_info, bid_war, trade_opportunities };
+
+export { sales, liveFeed, minted, token_balance, collecting_stats, filter_by_tags, filter_by_edition, user_info, bid_war, trade_opportunities, ps_market };

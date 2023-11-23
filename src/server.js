@@ -11,7 +11,7 @@ import filterByEditionRoutes from './routes/filterByEditionRoutes.js';
 import userInfoRoutes from './routes/userInfoRoutes.js'
 import bidWarRoutes from './routes/bidWarRoutes.js'
 import tradeOpportunities from './routes/tradeOpportunitiesRoutes.js'
-
+import psMarketRoutes from './routes/psMarketRoutes.js';
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -34,6 +34,7 @@ app.use('/filter_by_edition', filterByEditionRoutes);
 app.use('/user_info', userInfoRoutes);
 app.use('/bid_war', bidWarRoutes);
 app.use('/trade_opportunities', tradeOpportunities)
+app.use('/market', psMarketRoutes)
  //v1 tools
 app.use('/mint', mintRoutes);
 app.use('/token_balance', tokenBalanceRoutes);
